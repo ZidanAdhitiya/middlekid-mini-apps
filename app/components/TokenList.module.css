@@ -1,0 +1,210 @@
+.container {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-xl);
+    animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-primary);
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.headerCell {
+    text-align: left;
+    padding: var(--spacing-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.sortable:hover {
+    color: var(--color-primary);
+}
+
+.sortIcon {
+    margin-left: var(--spacing-xs);
+    color: var(--color-primary);
+}
+
+.row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.cell {
+    padding: var(--spacing-md);
+}
+
+.asset {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-bg-darker);
+}
+
+.logoPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 1.125rem;
+}
+
+.assetInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.symbol {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-size: 0.9375rem;
+}
+
+.name {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+}
+
+.balance {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+}
+
+.value {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.price {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+}
+
+.change {
+    font-weight: 600;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    width: fit-content;
+    font-size: 0.875rem;
+}
+
+.positive {
+    color: var(--color-success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.negative {
+    color: var(--color-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.noData {
+    color: var(--color-text-muted);
+}
+
+.portfolioPercent {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.875rem;
+}
+
+.progressBar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+}
+
+.empty {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-muted);
+}
+
+.emptyIcon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-lg);
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-lg);
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .headerCell,
+    .cell {
+        padding: var(--spacing-sm);
+    }
+
+    .logo,
+    .logoPlaceholder {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+
+    .symbol {
+        font-size: 0.875rem;
+    }
+
+    .name {
+        font-size: 0.75rem;
+    }
+}

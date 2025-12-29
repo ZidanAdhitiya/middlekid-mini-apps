@@ -1,126 +1,240 @@
 .container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-  color: white;
   position: relative;
-}
-
-.closeButton {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-}
-
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
 }
 
 .content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.dashboard {
+  margin-top: var(--spacing-2xl);
+}
+
+/* Loading State */
+.loadingContainer {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.loadingSpinner {
+  width: 64px;
+  height: 64px;
+  border: 4px solid rgba(99, 102, 241, 0.1);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-lg);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Error State */
+.errorContainer {
+  max-width: 500px;
+  margin: var(--spacing-2xl) auto;
+  padding: var(--spacing-xl);
+  background: var(--color-bg-card);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.errorIcon {
+  width: 64px;
+  height: 64px;
+  color: var(--color-danger);
+  margin: 0 auto var(--spacing-lg);
+}
+
+.errorTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.errorMessage {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.retryButton {
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+/* Address Card */
+.addressCard {
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  margin-top: var(--spacing-xl);
+  animation: fadeIn 0.6s ease-out 0.4s both;
+}
+
+.addressLabel {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.addressValue {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  word-break: break-all;
+  margin-bottom: var(--spacing-md);
+}
+
+.explorerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.explorerLink svg {
+  width: 16px;
+  height: 16px;
+}
+
+.explorerLink:hover {
+  color: var(--color-accent);
+  transform: translateX(4px);
+}
+
+/* Welcome Section */
+.welcome {
+  max-width: 700px;
+  margin: var(--spacing-2xl) auto;
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.welcomeIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-xl);
+  background: var(--gradient-primary);
+  border-radius: var(--radius-lg);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  padding: 2rem;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
 }
 
-.waitlistForm {
-  text-align: center;
-  max-width: 600px;
-  width: 100%;
+.welcomeIcon svg {
+  width: 48px;
+  height: 48px;
+  color: white;
 }
 
-.title {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
-  background-clip: text;
+.welcomeTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  background-clip: text;
 }
 
-.subtitle {
-  font-size: 1.2rem;
+.welcomeText {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2xl);
   line-height: 1.6;
-  margin-bottom: 3rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 300;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
 }
 
-.emailInput {
-  width: 100%;
-  max-width: 400px;
-  padding: 1rem 1.5rem;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white;
-  backdrop-filter: blur(10px);
+.feature {
+  padding: var(--spacing-lg);
+  background: var(--color-bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
   transition: all 0.3s ease;
 }
 
-.emailInput::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+.feature:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
-.emailInput:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+.featureIcon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
 }
 
-.error {
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  margin: 0;
+.featureText {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
-.joinButton {
-  background: #f7d954;
-  color: #000;
-  border: none;
-  padding: 1rem 3rem;
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 1rem;
-  box-shadow: 0 4px 20px rgba(247, 217, 84, 0.3);
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+
+  .welcomeText {
+    font-size: 1rem;
+  }
+
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
 }
 
-.joinButton:hover {
-  background: #f5d73a;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(247, 217, 84, 0.4);
+@media (max-width: 480px) {
+  .addressValue {
+    font-size: 0.75rem;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
 }

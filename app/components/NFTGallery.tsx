@@ -25,6 +25,7 @@ const NFTCard = memo(({ nft }: { nft: NFT }) => {
                         className={styles.image}
                         onError={() => setHasError(true)}
                         loading="lazy"
+                        unoptimized
                     />
                 ) : (
                     <div className={styles.placeholder}>

@@ -16,6 +16,30 @@ class CoinGeckoAPI {
     private cache: Map<string, { data: PriceData; timestamp: number }> = new Map();
     private cacheTTL = 5 * 60 * 1000; // 5 minutes
 
+    async getTokenPrice(coinId: string): Promise<TokenPrice> {
+        try {
+            const response = await fetch(
+                `${COINGECKO_API_URL}/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    next: { revalidate: 60 } // Cache for 60 seconds
+                }
+            );
+
+            if (!response.ok) {
+                return { usd: 0, usd_24h_change: 0 };
+            }
+
+            const data = await response.json();
+            return data[coinId] || { usd: 0, usd_24h_change: 0 };
+        } catch (error) {
+            console.error('CoinGecko API error:', error);
+            return { usd: 0, usd_24h_change: 0 };
+        }
+    }
+
     async getTokenPrices(addresses: string[]): Promise<PriceData> {
         if (addresses.length === 0) return {};
 

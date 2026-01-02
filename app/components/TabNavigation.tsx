@@ -2,15 +2,16 @@
 
 import styles from './TabNavigation.module.css';
 
-export type TabType = 'overview' | 'tokens' | 'nfts' | 'activity';
+export type TabType = 'overview' | 'tokens' | 'nfts' | 'activity' | 'defi';
 
 interface TabNavigationProps {
     activeTab: TabType;
     onTabChange: (tab: TabType) => void;
-    counts?: {
+    counts: {
         tokens: number;
         nfts: number;
         transactions: number;
+        defi: number;
     };
 }
 
@@ -68,7 +69,7 @@ export default function TabNavigation({ activeTab, onTabChange, counts }: TabNav
                     >
                         <span className={styles.icon}>{tab.icon}</span>
                         <span className={styles.label}>{tab.label}</span>
-                        {tab.count !== undefined && tab.count > 0 && (
+                        {(tab.count !== undefined && tab.count > 0 || tab.id === 'defi') && (
                             <span className={styles.count}>{tab.count}</span>
                         )}
                     </button>

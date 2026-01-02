@@ -6,6 +6,9 @@ import TabNavigation, { TabType } from "./components/TabNavigation";
 import PortfolioOverview from "./components/PortfolioOverview";
 import TokenList from "./components/TokenList";
 import NFTGallery from "./components/NFTGallery";
+import ActivityFeed from "./components/ActivityFeed";
+import DeFiPositions from "./components/DeFiPositions";
+import PortfolioInsights from "./components/PortfolioInsights";
 import type { PortfolioData } from "./lib/types";
 import styles from "./page.module.css";
 
@@ -23,14 +26,15 @@ export default function Home() {
     setActiveTab('overview'); // Reset to overview tab
 
     try {
+      console.log("Fetching portfolio data for:", address);
       const response = await fetch(`/api/portfolio?address=${address}`);
+      const data = await response.json();
+      console.log("Portfolio Data Received:", data);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch portfolio data');
+        throw new Error((data as any).error || 'Failed to fetch portfolio data');
       }
 
-      const data: PortfolioData = await response.json();
       setPortfolioData(data);
     } catch (err) {
       console.error('Portfolio fetch error:', err);
@@ -74,6 +78,9 @@ export default function Home() {
         {/* Portfolio Data Display with Tabs */}
         {portfolioData && !isLoading && !error && (
           <div className={styles.dashboard}>
+            {/* Insights Section */}
+            <PortfolioInsights insights={portfolioData.insights} errors={portfolioData.errors} />
+
             {/* Tab Navigation */}
             <TabNavigation
               activeTab={activeTab}
@@ -82,6 +89,7 @@ export default function Home() {
                 tokens: portfolioData.tokens.length,
                 nfts: portfolioData.nfts.length,
                 transactions: portfolioData.transactions.length,
+                defi: portfolioData.stakingPositions.length,
               }}
             />
 
@@ -135,13 +143,23 @@ export default function Home() {
 
               {activeTab === 'activity' && (
                 <div className={styles.tabPane}>
-                  <div className={styles.emptyTab}>
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p>Transaction history coming soon</p>
-                  </div>
+                  <ActivityFeed transactions={portfolioData.transactions} />
                 </div>
+              )}
+
+              {activeTab === 'defi' && (
+                <div className={styles.tabPane}>
+                  <DeFiPositions positions={portfolioData.stakingPositions} />
+                </div>
+              )}
+            </div>
+            <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontSize: '12px' }}>
+              v1.2 Real Mode (Port: {typeof window !== 'undefined' ? window.location.port : '...'})
+              {(portfolioData as any).debug && (
+                <pre style={{ textAlign: 'left', background: '#222', padding: '10px', marginTop: '10px', overflow: 'auto' }}>
+                  DEBUG INFO:
+                  {JSON.stringify((portfolioData as any).debug, null, 2)}
+                </pre>
               )}
             </div>
           </div>

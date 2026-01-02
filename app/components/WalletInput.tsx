@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { isValidAddress } from '../lib/moralis';
+import { isValidAddress } from '../lib/alchemy';
 import styles from './WalletInput.module.css';
 
 interface WalletInputProps {
@@ -47,7 +47,7 @@ export default function WalletInput({ onSearch, isLoading }: WalletInputProps) {
                         type="text"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Enter wallet address (0x...)"
+                        placeholder="Enter wallet address (0x... or bc1...)"
                         className={styles.input}
                         disabled={isLoading}
                     />

@@ -13,6 +13,7 @@ export interface Token {
     usdValue?: number;
     percentChange24h?: number;
     portfolioPercentage?: number;
+    chainId?: string; // e.g. 'base', 'ethereum'
 }
 
 export interface NFT {
@@ -32,8 +33,10 @@ export interface NFT {
     };
     tokenUri?: string;
     imageUrl?: string;
+    fullImageUrl?: string;
     collectionName?: string;
     floorPrice?: number;
+    chainId?: string;
 }
 
 export interface Transaction {
@@ -47,18 +50,23 @@ export interface Transaction {
     gasPrice: string;
     methodLabel?: string;
     category?: string;
+    asset?: string;
+    direction?: 'in' | 'out';
+    chainId?: string;
 }
 
+// Re-using DeFiPosition structure for Staking/LP
 export interface StakingPosition {
+    id: string;
     protocol: string;
-    tokenSymbol: string;
-    tokenAddress: string;
-    stakedAmount: string;
-    stakedAmountUsd?: number;
-    rewards?: string;
-    rewardsUsd?: number;
+    chain: string;
+    tokens: {
+        symbol: string;
+        amount: string;
+        value: number;
+    }[];
+    totalValue: number;
     apy?: number;
-    logo?: string;
 }
 
 export interface LPPosition {
@@ -90,6 +98,14 @@ export interface PortfolioSummary {
     totalLPPositions: number;
 }
 
+export interface Insight {
+    type: 'warning' | 'info' | 'neutral';
+    title: string;
+    description: string;
+    relatedAsset?: string;
+    score?: number; // 0-100 impact score
+}
+
 export interface PortfolioData {
     address: string;
     summary: PortfolioSummary;
@@ -98,6 +114,9 @@ export interface PortfolioData {
     transactions: Transaction[];
     stakingPositions: StakingPosition[];
     lpPositions: LPPosition[];
+    insights: Insight[];
+    extract?: any;
+    errors?: string[];
 }
 
 // Moralis API Response Types

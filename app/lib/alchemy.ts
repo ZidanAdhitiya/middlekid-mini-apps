@@ -1,18 +1,35 @@
 import { ChainConfig, SUPPORTED_CHAINS } from './chains';
 import { createPublicClient, http, formatUnits, Address } from 'viem';
-import { mainnet, base, optimism, arbitrum, polygon } from 'viem/chains';
+import { mainnet, base, optimism, arbitrum, polygon, bsc, avalanche, fantom, gnosis, linea, zksync, scroll, blast, mantle, cronos, zora } from 'viem/chains';
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
 // Map chain config to Viem chain definition
 const getViemChain = (chainId: string) => {
+    // 1. Try to find in supported/curated chains
+    const chain = SUPPORTED_CHAINS.find(c => c.id === chainId);
+    if (chain && chain.viemChain) {
+        return chain.viemChain;
+    }
+
+    // 2. Special overrides (Monad/Viction hardcoded before) can still exist or be merged
     switch (chainId) {
-        case 'ethereum': return mainnet;
-        case 'base': return base;
-        case 'optimism': return optimism;
-        case 'arbitrum': return arbitrum;
-        case 'polygon': return polygon;
-        default: return base;
+        case 'monad': return {
+            id: 143,
+            name: 'Monad Mainnet',
+            network: 'monad',
+            nativeCurrency: { decimals: 18, name: 'Monad', symbol: 'MON' },
+            rpcUrls: { default: { http: ['https://rpc.monad.xyz'] }, public: { http: ['https://rpc.monad.xyz'] } }
+        } as any;
+        // Viction is actually already in viem/chains usually, but keeping fallback just in case
+        case 'sonic': return {
+            id: 146,
+            name: 'Sonic Mainnet',
+            network: 'sonic',
+            nativeCurrency: { decimals: 18, name: 'Sonic', symbol: 'S' },
+            rpcUrls: { default: { http: ['https://rpc.soniclabs.com'] }, public: { http: ['https://rpc.soniclabs.com'] } }
+        } as any;
+        default: return mainnet;
     }
 };
 
@@ -22,17 +39,51 @@ class AlchemyAPI {
     constructor() {
         if (!ALCHEMY_API_KEY) {
             console.error('ALCHEMY_API_KEY is not defined');
-            // Allow running without key, but requests will fail
             this.apiKey = 'dummy-key';
         } else {
             this.apiKey = ALCHEMY_API_KEY;
         }
     }
 
-    private getRpcUrl(chainId: string) {
-        const chain = SUPPORTED_CHAINS.find(c => c.id === chainId);
-        if (!chain) throw new Error(`Unsupported chain: ${chainId}`);
-        return `https://${chain.alchemyNetwork}.g.alchemy.com/v2/${this.apiKey}`;
+    private getRpcUrl(chainId: string): string {
+        // Try to find chain by numeric chainId first
+        const numericId = parseInt(chainId);
+        let chain = SUPPORTED_CHAINS.find(c => c.chainId === numericId);
+
+        // Fallback to string ID match
+        if (!chain) {
+            chain = SUPPORTED_CHAINS.find(c => c.id === chainId);
+        }
+
+        if (!chain) {
+            throw new Error(`Unsupported chain: ${chainId}`);
+        }
+
+        // Map chainId to Alchemy network name
+        const networkMap: { [key: string]: string } = {
+            '1': 'eth-mainnet',
+            '137': 'polygon-mainnet',
+            '10': 'opt-mainnet',
+            '42161': 'arb-mainnet',
+            '8453': 'base-mainnet',  // Base support
+            '56': 'bnb-mainnet',
+            '43114': 'avax-mainnet',
+            '250': 'fantom-mainnet',
+            '100': 'gnosis-mainnet',
+            '324': 'zksync-mainnet',
+        };
+
+        const network = networkMap[chainId];
+        if (network) {
+            return `https://${network}.g.alchemy.com/v2/${this.apiKey}`;
+        }
+
+        // Fallback to chain's own RPC if available
+        if (chain.rpcUrl) {
+            return chain.rpcUrl;
+        }
+
+        throw new Error(`No RPC URL available for chain: ${chainId}`);
     }
 
     private async fetch(url: string, options: RequestInit = {}): Promise<any> {
@@ -132,6 +183,38 @@ class AlchemyAPI {
         });
         return result.result;
     }
+
+    async getTransactionReceipt(txHash: string, chainId: string = '1'): Promise<any> {
+        const url = this.getRpcUrl(chainId);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_getTransactionReceipt',
+                params: [txHash]
+            })
+        });
+        const data = await response.json();
+        return data.result;
+    }
+
+    async getTransaction(txHash: string, chainId: string = '1'): Promise<any> {
+        const url = this.getRpcUrl(chainId);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_getTransactionByHash',
+                params: [txHash]
+            })
+        });
+        const data = await response.json();
+        return data.result;
+    }
 }
 
 function hex(val: number): string {
@@ -143,9 +226,21 @@ export const alchemyAPI = new AlchemyAPI();
 // Helper functions
 export async function getNativeBalance(address: Address, chain: ChainConfig) {
     const viemChain = getViemChain(chain.id);
+
+    // Determine Transport URL
+    let transportUrl = '';
+    if (chain.alchemyNetwork) {
+        transportUrl = `https://${chain.alchemyNetwork}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+    } else if (chain.rpcUrl) {
+        transportUrl = chain.rpcUrl;
+    } else {
+        // Fallback or error
+        return { balance: '0', formatted: '0' };
+    }
+
     const client = createPublicClient({
         chain: viemChain,
-        transport: http(`https://${chain.alchemyNetwork}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`),
+        transport: http(transportUrl),
     });
 
     try {
@@ -157,6 +252,20 @@ export async function getNativeBalance(address: Address, chain: ChainConfig) {
     } catch (e) {
         console.error(`Failed to fetch native balance for ${chain.name}`, e);
         return { balance: '0', formatted: '0' };
+    }
+}
+
+export function formatBalance(balance: string, decimals: number): string {
+    try {
+        const balanceNum = parseFloat(formatUnits(BigInt(balance), decimals));
+        if (balanceNum === 0) return '0';
+        if (balanceNum < 0.000001) return '< 0.000001';
+        if (balanceNum < 1) return balanceNum.toFixed(6);
+        if (balanceNum < 1000) return balanceNum.toFixed(4);
+        if (balanceNum < 1000000) return balanceNum.toFixed(2);
+        return balanceNum.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    } catch {
+        return '0';
     }
 }
 

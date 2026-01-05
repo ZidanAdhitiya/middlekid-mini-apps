@@ -56,6 +56,16 @@ export default function TabNavigation({ activeTab, onTabChange, counts }: TabNav
             ),
             count: counts?.transactions,
         },
+        {
+            id: 'defi' as TabType,
+            label: 'DeFi',
+            icon: (
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            ),
+            count: counts?.defi,
+        },
     ];
 
     return (

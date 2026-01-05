@@ -62,7 +62,7 @@ export default function TokenList({ tokens }: TokenListProps) {
 
     return (
         <div className={`${styles.container} glass`}>
-            <h2 className={styles.title}>Tokens ({tokens.length})</h2>
+            <h2 className={styles.title}>Tokens ({tokens.length}) <span style={{ color: '#22c55e', fontSize: '0.7em' }}>✓ v2.0</span></h2>
 
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>
@@ -106,13 +106,21 @@ export default function TokenList({ tokens }: TokenListProps) {
                                 <tr key={`${token.address}-${index}`} className={styles.row}>
                                     <td className={styles.cell}>
                                         <div className={styles.asset}>
-                                            {token.logo ? (
-                                                <img src={token.logo} alt={token.symbol} className={styles.logo} />
-                                            ) : (
-                                                <div className={styles.logoPlaceholder}>
-                                                    {token.symbol.charAt(0)}
-                                                </div>
-                                            )}
+                                            {(() => {
+                                                const hasLogo = Boolean(token.logo);
+                                                const logoUrl = token.logo || '';
+                                                // Debug: log first 3 tokens
+                                                if (index < 3) {
+                                                    console.log(`Token ${token.symbol}: hasLogo=${hasLogo}, logo="${logoUrl}"`);
+                                                }
+                                                return hasLogo ? (
+                                                    <img src={logoUrl} alt={token.symbol} className={styles.logo} />
+                                                ) : (
+                                                    <div className={styles.logoPlaceholder}>
+                                                        {token.symbol.charAt(0)}
+                                                    </div>
+                                                );
+                                            })()}
                                             <div className={styles.assetInfo}>
                                                 <div className={styles.symbol}>{token.symbol}</div>
                                                 <div className={styles.name}>{token.name}</div>

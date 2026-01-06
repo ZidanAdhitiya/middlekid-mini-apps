@@ -133,33 +133,67 @@ def chat():
                 loop.close()
             
             # Extract response from events
-            # Events typically have a 'content' or 'text' field in the final event
+            # Events can be various types - need to handle safely
             response_text = ""
             
-            for event in events:
-                # Check if event has content
-                if hasattr(event, 'content') and event.content:
-                    response_text += str(event.content)
-                elif hasattr(event, 'text') and event.text:
-                    response_text += str(event.text)
-                elif hasattr(event, 'message') and event.message:
-                    response_text += str(event.message)
-                elif isinstance(event, dict):
-                    response_text += event.get('content', '') or event.get('text', '') or event.get('message', '')
-                elif isinstance(event, str):
-                    response_text += event
-            
-            # If no response collected, try to extract from last event
-            if not response_text and events:
-                last_event = events[-1]
-                if hasattr(last_event, '__dict__'):
-                    response_text = str(last_event.__dict__)
-                else:
-                    response_text = str(last_event)
-            
-            # Fallback
-            if not response_text:
-                response_text = "No response from agent"
+            try:
+                for event in events:
+                    # Safely extract content from event
+                    try:
+                        # Try different attributes
+                        if hasattr(event, 'content'):
+                            content = getattr(event, 'content', None)
+                            if content and not isinstance(content, type(None)):
+                                response_text += str(content)
+                        elif hasattr(event, 'text'):
+                            text = getattr(event, 'text', None)
+                            if text and not isinstance(text, type(None)):
+                                response_text += str(text)
+                        elif hasattr(event, 'message'):
+                            message = getattr(event, 'message', None)
+                            if message and not isinstance(message, type(None)):
+                                response_text += str(message)
+                        elif hasattr(event, 'data'):
+                            data = getattr(event, 'data', None)
+                            if data and not isinstance(data, type(None)):
+                                response_text += str(data)
+                        elif isinstance(event, dict):
+                            # Extract from dict
+                            for key in ['content', 'text', 'message', 'data', 'response']:
+                                if key in event and event[key]:
+                                    response_text += str(event[key])
+                                    break
+                        elif isinstance(event, str):
+                            response_text += event
+                    except Exception as event_error:
+                        # Skip problematic events
+                        logger.warning(f"Error processing event: {event_error}")
+                        continue
+                
+                # If no response collected, try to get from last event
+                if not response_text and events:
+                    try:
+                        last_event = events[-1]
+                        # Try to convert to dict or string
+                        if hasattr(last_event, '__dict__'):
+                            event_dict = last_event.__dict__
+                            # Look for common response fields
+                            for key in ['content', 'text', 'message', 'data', 'response', 'output']:
+                                if key in event_dict and event_dict[key]:
+                                    response_text = str(event_dict[key])
+                                    break
+                        if not response_text:
+                            response_text = str(last_event)
+                    except Exception as e:
+                        logger.warning(f"Error extracting from last event: {e}")
+                
+                # Fallback
+                if not response_text:
+                    response_text = "Agent completed but no response text found"
+                
+            except Exception as extract_error:
+                logger.error(f"Error extracting response: {extract_error}", exc_info=True)
+                response_text = f"Error processing response: {str(extract_error)}"
             
             logger.info(f"Agent response: {response_text[:100]}...")
             

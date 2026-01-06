@@ -1,0 +1,28 @@
+steps:
+  # Build the container image from python-agent directory
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/goodkid-agent', './python-agent']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/goodkid-agent']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'goodkid-agent'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/goodkid-agent'
+      - '--region'
+      - 'asia-southeast1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'ALLOWED_ORIGINS=*'
+
+images:
+  - 'gcr.io/$PROJECT_ID/goodkid-agent'

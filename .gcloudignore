@@ -1,0 +1,5 @@
+# Ignore everything except python-agent directory
+*
+!python-agent/
+!python-agent/**
+!cloudbuild.yaml

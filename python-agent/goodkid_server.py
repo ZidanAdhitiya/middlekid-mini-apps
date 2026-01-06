@@ -107,26 +107,32 @@ def chat():
         # run_async returns an async generator that yields events
         try:
             import asyncio
+            from google.adk.messages import Message
             
             # Create runner session
             session_id = "demo_session"
             user_id = "demo_user"
             
+            # Create proper Message object
+            # runner.run_async expects new_message to be a Message object with role attribute
+            message_obj = Message(role="user", content=user_message)
+            
             logger.info(f"Starting agent execution - user_id: {user_id}, session_id: {session_id}")
             logger.info(f"Runner type: {type(runner)}")
             logger.info(f"Agent type: {type(root_agent)}")
+            logger.info(f"Message object type: {type(message_obj)}")
             
             # Collect events from the async generator
             async def run_agent():
                 logger.info("Inside async run_agent function")
                 events = []
                 try:
-                    logger.info(f"About to call runner.run_async with message: {user_message}")
+                    logger.info(f"About to call runner.run_async with message object")
                     # run_async yields events, so we need to iterate through them
                     async for event in runner.run_async(
                         user_id=user_id,
                         session_id=session_id,
-                        new_message=user_message
+                        new_message=message_obj  # Pass Message object, not string
                     ):
                         logger.info(f"Received event: {type(event)}")
                         events.append(event)

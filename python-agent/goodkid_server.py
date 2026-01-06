@@ -11,6 +11,10 @@ import logging
 # Import the GoodKid agent
 from good_kid_agent import root_agent
 
+# Import Google ADK runner components
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,7 +22,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Configure CORS to allow requests from your Next.js app
-# In production, replace '*' with your actual domain
 CORS(app, resources={
     r"/*": {
         "origins": os.getenv("ALLOWED_ORIGINS", "*").split(","),
@@ -26,6 +29,14 @@ CORS(app, resources={
         "allow_headers": ["Content-Type"]
     }
 })
+
+# Initialize session service and runner
+session_service = InMemorySessionService()
+runner = Runner(
+    agent=root_agent,
+    session_service=session_service,
+    app_name="GoodKid-MiddleKid"
+)
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -64,55 +75,35 @@ def chat():
             }), 400
         
         user_message = data['message']
-        conversation_history = data.get('conversationHistory', [])
         
         logger.info(f"Received message: {user_message[:100]}...")
         
-        # Build conversation context for the agent
-        # The Google ADK agent expects a string input
-        # We can include history as context if needed
-        if conversation_history:
-            context = "Previous conversation:\n"
-            for msg in conversation_history[-5:]:  # Last 5 messages for context
-                role = msg.get('role', 'user')
-                content = msg.get('content', '')
-                context += f"{role}: {content}\n"
-            context += f"\nuser: {user_message}"
-            full_message = context
-        else:
-            full_message = user_message
-        
-        # Call the agent
-        # Google ADK LlmAgent uses send_message() method
+        # Execute agent using runner
         try:
-            # Build the message with history context if available
-            if conversation_history:
-                # Include recent history for context
-                context_messages = []
-                for msg in conversation_history[-5:]:  # Last 5 messages
-                    context_messages.append({
-                        'role': msg.get('role', 'user'),
-                        'content': msg.get('content', '')
-                    })
-                
-                # Send message with context
-                response = root_agent.send_message(user_message, context=context_messages)
-            else:
-                # Send message without context
-                response = root_agent.send_message(user_message)
+            # Use a simple user_id for demo - in production, use actual user authentication
+            user_id = "demo_user"
             
-            # Extract the response text
-            # The response format may vary based on Google ADK version
-            if hasattr(response, 'content'):
-                response_text = response.content
-            elif hasattr(response, 'text'):
-                response_text = response.text
-            elif isinstance(response, str):
-                response_text = response
-            elif isinstance(response, dict):
-                response_text = response.get('content') or response.get('text') or str(response)
+            # Execute the agent with the runner
+            # The runner handles session management automatically
+            result = runner.run(
+                user_id=user_id,
+                prompt=user_message
+            )
+            
+            # Extract the response text from the result
+            # The result typically contains a 'response' or 'output' field
+            if hasattr(result, 'response'):
+                response_text = result.response
+            elif hasattr(result, 'output'):
+                response_text = result.output
+            elif hasattr(result, 'content'):
+                response_text = result.content
+            elif isinstance(result, str):
+                response_text = result
+            elif isinstance(result, dict):
+                response_text = result.get('response') or result.get('output') or result.get('content') or str(result)
             else:
-                response_text = str(response)
+                response_text = str(result)
             
             logger.info(f"Agent response: {response_text[:100]}...")
             

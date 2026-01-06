@@ -102,31 +102,46 @@ def chat():
         
         logger.info(f"Received message: {user_message[:100]}...")
         
-        # Execute agent using runner
+        # Execute agent using run_async method
+        # Based on debug endpoint, LlmAgent has run_async and run_live methods
         try:
-            # Use a simple user_id for demo - in production, use actual user authentication
+            import asyncio
+            
+            # Create runner session
+            session_id = "demo_session"
             user_id = "demo_user"
             
-            # Execute the agent with the runner
-            # The runner handles session management automatically
-            result = runner.run(
-                user_id=user_id,
-                prompt=user_message
-            )
+            # Run the agent using asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            try:
+                # Call run_async method
+                result = loop.run_until_complete(
+                    runner.run_async(
+                        user_id=user_id,
+                        session_id=session_id,
+                        prompt=user_message
+                    )
+                )
+            finally:
+                loop.close()
             
             # Extract the response text from the result
-            # The result typically contains a 'response' or 'output' field
             if hasattr(result, 'response'):
                 response_text = result.response
             elif hasattr(result, 'output'):
                 response_text = result.output
             elif hasattr(result, 'content'):
-                response_text = result.content
+                response_text = result.content  
+            elif hasattr(result, 'text'):
+                response_text = result.text
             elif isinstance(result, str):
                 response_text = result
             elif isinstance(result, dict):
-                response_text = result.get('response') or result.get('output') or result.get('content') or str(result)
+                response_text = result.get('response') or result.get('output') or result.get('content') or result.get('text') or str(result)
             else:
+                # Fallback: convert to string
                 response_text = str(result)
             
             logger.info(f"Agent response: {response_text[:100]}...")

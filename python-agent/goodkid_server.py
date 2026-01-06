@@ -116,12 +116,13 @@ def chat():
             asyncio.set_event_loop(loop)
             
             try:
-                # Call run_async method
+                # Call run_async method with correct parameters
+                # Based on Google ADK docs: user_id, session_id, new_message
                 result = loop.run_until_complete(
                     runner.run_async(
                         user_id=user_id,
                         session_id=session_id,
-                        prompt=user_message
+                        new_message=user_message  # Changed from 'prompt' to 'new_message'
                     )
                 )
             finally:

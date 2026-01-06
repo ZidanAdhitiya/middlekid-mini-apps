@@ -47,6 +47,30 @@ def health_check():
         'version': '1.0.0'
     })
 
+@app.route('/debug', methods=['GET'])
+def debug_agent():
+    """Debug endpoint to discover agent methods"""
+    try:
+        agent_info = {
+            'agent_type': str(type(root_agent)),
+            'agent_class': root_agent.__class__.__name__,
+            'available_methods': [m for m in dir(root_agent) if not m.startswith('_')],
+            'callable': callable(root_agent),
+            'has_run': hasattr(root_agent, 'run'),
+            'has_send_message': hasattr(root_agent, 'send_message'),
+            'has_execute': hasattr(root_agent, 'execute'),
+            'has_invoke': hasattr(root_agent, 'invoke'),
+        }
+        
+        # Try to get agent documentation
+        if hasattr(root_agent, '__doc__') and root_agent.__doc__:
+            agent_info['documentation'] = root_agent.__doc__
+        
+        return jsonify(agent_info)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/chat', methods=['POST'])
 def chat():
     """

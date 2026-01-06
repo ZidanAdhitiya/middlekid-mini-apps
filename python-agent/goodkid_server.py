@@ -103,7 +103,7 @@ def chat():
         logger.info(f"Received message: {user_message[:100]}...")
         
         # Execute agent using run_async method
-        # Based on debug endpoint, LlmAgent has run_async and run_live methods
+        # run_async returns an async generator that yields events
         try:
             import asyncio
             
@@ -111,39 +111,55 @@ def chat():
             session_id = "demo_session"
             user_id = "demo_user"
             
-            # Run the agent using asyncio
+            # Collect events from the async generator
+            async def run_agent():
+                events = []
+                # run_async yields events, so we need to iterate through them
+                async for event in runner.run_async(
+                    user_id=user_id,
+                    session_id=session_id,
+                    new_message=user_message
+                ):
+                    events.append(event)
+                return events
+            
+            # Run the async function
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             
             try:
-                # Call run_async method with correct parameters
-                # Based on Google ADK docs: user_id, session_id, new_message
-                result = loop.run_until_complete(
-                    runner.run_async(
-                        user_id=user_id,
-                        session_id=session_id,
-                        new_message=user_message  # Changed from 'prompt' to 'new_message'
-                    )
-                )
+                events = loop.run_until_complete(run_agent())
             finally:
                 loop.close()
             
-            # Extract the response text from the result
-            if hasattr(result, 'response'):
-                response_text = result.response
-            elif hasattr(result, 'output'):
-                response_text = result.output
-            elif hasattr(result, 'content'):
-                response_text = result.content  
-            elif hasattr(result, 'text'):
-                response_text = result.text
-            elif isinstance(result, str):
-                response_text = result
-            elif isinstance(result, dict):
-                response_text = result.get('response') or result.get('output') or result.get('content') or result.get('text') or str(result)
-            else:
-                # Fallback: convert to string
-                response_text = str(result)
+            # Extract response from events
+            # Events typically have a 'content' or 'text' field in the final event
+            response_text = ""
+            
+            for event in events:
+                # Check if event has content
+                if hasattr(event, 'content') and event.content:
+                    response_text += str(event.content)
+                elif hasattr(event, 'text') and event.text:
+                    response_text += str(event.text)
+                elif hasattr(event, 'message') and event.message:
+                    response_text += str(event.message)
+                elif isinstance(event, dict):
+                    response_text += event.get('content', '') or event.get('text', '') or event.get('message', '')
+                elif isinstance(event, str):
+                    response_text += event
+            
+            # If no response collected, try to extract from last event
+            if not response_text and events:
+                last_event = events[-1]
+                if hasattr(last_event, '__dict__'):
+                    response_text = str(last_event.__dict__)
+                else:
+                    response_text = str(last_event)
+            
+            # Fallback
+            if not response_text:
+                response_text = "No response from agent"
             
             logger.info(f"Agent response: {response_text[:100]}...")
             

@@ -101,6 +101,7 @@ def chat():
         user_message = data['message']
         
         logger.info(f"Received message: {user_message[:100]}...")
+        logger.info(f"Message type: {type(user_message)}")
         
         # Execute agent using run_async method
         # run_async returns an async generator that yields events
@@ -111,24 +112,41 @@ def chat():
             session_id = "demo_session"
             user_id = "demo_user"
             
+            logger.info(f"Starting agent execution - user_id: {user_id}, session_id: {session_id}")
+            logger.info(f"Runner type: {type(runner)}")
+            logger.info(f"Agent type: {type(root_agent)}")
+            
             # Collect events from the async generator
             async def run_agent():
+                logger.info("Inside async run_agent function")
                 events = []
-                # run_async yields events, so we need to iterate through them
-                async for event in runner.run_async(
-                    user_id=user_id,
-                    session_id=session_id,
-                    new_message=user_message
-                ):
-                    events.append(event)
-                return events
+                try:
+                    logger.info(f"About to call runner.run_async with message: {user_message}")
+                    # run_async yields events, so we need to iterate through them
+                    async for event in runner.run_async(
+                        user_id=user_id,
+                        session_id=session_id,
+                        new_message=user_message
+                    ):
+                        logger.info(f"Received event: {type(event)}")
+                        events.append(event)
+                    logger.info(f"Collected {len(events)} events")
+                    return events
+                except Exception as e:
+                    logger.error(f"Error in run_agent async function: {str(e)}", exc_info=True)
+                    raise
             
             # Run the async function
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             
             try:
+                logger.info("Running asyncio event loop")
                 events = loop.run_until_complete(run_agent())
+                logger.info(f"Successfully collected {len(events)} events")
+            except Exception as loop_error:
+                logger.error(f"Error in asyncio loop: {str(loop_error)}", exc_info=True)
+                raise
             finally:
                 loop.close()
             

@@ -83,20 +83,34 @@ def chat():
             full_message = user_message
         
         # Call the agent
-        # Note: The actual method to invoke the agent may vary based on Google ADK version
-        # You may need to adjust this based on the ADK documentation
+        # Google ADK LlmAgent uses send_message() method
         try:
-            # For Google ADK agents, you typically use .run() or similar
-            response = root_agent.run(full_message)
+            # Build the message with history context if available
+            if conversation_history:
+                # Include recent history for context
+                context_messages = []
+                for msg in conversation_history[-5:]:  # Last 5 messages
+                    context_messages.append({
+                        'role': msg.get('role', 'user'),
+                        'content': msg.get('content', '')
+                    })
+                
+                # Send message with context
+                response = root_agent.send_message(user_message, context=context_messages)
+            else:
+                # Send message without context
+                response = root_agent.send_message(user_message)
             
             # Extract the response text
-            # The response format may vary, adjust as needed
-            if hasattr(response, 'text'):
+            # The response format may vary based on Google ADK version
+            if hasattr(response, 'content'):
+                response_text = response.content
+            elif hasattr(response, 'text'):
                 response_text = response.text
             elif isinstance(response, str):
                 response_text = response
-            elif isinstance(response, dict) and 'text' in response:
-                response_text = response['text']
+            elif isinstance(response, dict):
+                response_text = response.get('content') or response.get('text') or str(response)
             else:
                 response_text = str(response)
             
@@ -107,7 +121,7 @@ def chat():
             })
             
         except Exception as agent_error:
-            logger.error(f"Agent execution error: {str(agent_error)}")
+            logger.error(f"Agent execution error: {str(agent_error)}", exc_info=True)
             return jsonify({
                 'error': 'Agent execution failed',
                 'details': str(agent_error)

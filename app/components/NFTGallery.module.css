@@ -1,0 +1,313 @@
+.container {
+    /* Removed padding - will be handled by tab content wrapper */
+}
+
+.performanceNote {
+    padding: var(--spacing-md);
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.iconPlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    opacity: 0.6;
+}
+
+.iconPlaceholder svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+    margin-bottom: var(--spacing-sm);
+}
+
+.nftType {
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg) 0;
+    gap: var(--spacing-md);
+}
+
+.pageButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+    background: var(--color-bg-card-hover);
+    border-color: var(--color-primary);
+}
+
+.pageButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pageButton svg {
+    width: 16px;
+    height: 16px;
+}
+
+.pageInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.currentPage {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.itemRange {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.card {
+    background: var(--color-bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.card:hover {
+    /* Removed transform for performance */
+    border-color: var(--color-primary);
+    /* Removed box-shadow for performance */
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: var(--color-bg-darker);
+    overflow: hidden;
+}
+
+.placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nftLabel {
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+.tokenId {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-top: var(--spacing-xs);
+}
+
+.image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image.loading {
+    opacity: 0;
+}
+
+.image.loaded {
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.imagePlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    opacity: 0.3;
+}
+
+.imagePlaceholder svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+}
+
+.skeleton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            var(--color-bg-darker) 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            var(--color-bg-darker) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.6) 100%);
+    /* Always visible for better performance */
+    opacity: 0.8;
+    /* Removed transition */
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: var(--spacing-sm);
+}
+
+/* Disabled hover effect for performance */
+/* .card:hover .overlay {
+    opacity: 1;
+} */
+
+.tokenId {
+    background: rgba(0, 0, 0, 0.8);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    font-family: var(--font-mono);
+}
+
+.info {
+    padding: var(--spacing-md);
+}
+
+.name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.collection {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.floor {
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+.empty {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-muted);
+}
+
+.emptyIcon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-lg);
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-lg);
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

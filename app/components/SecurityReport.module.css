@@ -1,0 +1,257 @@
+.container {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.title svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-primary);
+}
+
+/* Risk Card */
+.riskCard {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    border-left: 4px solid;
+}
+
+.riskCard.critical {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+}
+
+.riskCard.high {
+    background: rgba(249, 115, 22, 0.1);
+    border-left-color: #f97316;
+}
+
+.riskCard.medium {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #f59e0b;
+}
+
+.riskCard.low {
+    background: rgba(34, 197, 94, 0.1);
+    border-left-color: #22c55e;
+}
+
+.riskCard.safe {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+}
+
+.riskHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.riskLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.riskLevel {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+}
+
+.riskScore {
+    text-align: right;
+}
+
+.scoreNumber {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--color-text-primary);
+    line-height: 1;
+}
+
+.scoreLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.summary {
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Security Checks */
+.checksSection {
+    margin-bottom: var(--spacing-xl);
+}
+
+.checksSection h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.checks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.checkItem {
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.checkItem.fail {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.checkItem.warning {
+    background: rgba(245, 158, 11, 0.05);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.checkItem.pass {
+    background: rgba(34, 197, 94, 0.05);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.checkHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.checkIcon {
+    font-size: 1.25rem;
+}
+
+.checkName {
+    flex: 1;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.severityBadge {
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.severityBadge.critical {
+    background: #dc2626;
+    color: white;
+}
+
+.severityBadge.high {
+    background: #f97316;
+    color: white;
+}
+
+.severityBadge.medium {
+    background: #f59e0b;
+    color: white;
+}
+
+.severityBadge.low {
+    background: #22c55e;
+    color: white;
+}
+
+.checkMessage {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Recommendations */
+.recommendations {
+    padding: var(--spacing-lg);
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.recommendations h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0 0 var(--spacing-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.recommendations h3 svg {
+    width: 20px;
+    height: 20px;
+}
+
+.recommendations ul {
+    margin: 0;
+    padding-left: var(--spacing-lg);
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+}
+
+.recommendations li {
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Disclaimer */
+.disclaimer {
+    padding: var(--spacing-md);
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.disclaimer strong {
+    color: #f59e0b;
+}
+
+@media (max-width: 768px) {
+    .riskHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .riskScore {
+        text-align: left;
+    }
+
+    .scoreNumber {
+        font-size: 2rem;
+    }
+}

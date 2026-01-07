@@ -1,0 +1,545 @@
+/* Cemetery Page Dark Graveyard Theme */
+
+.cemetery {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    padding: 2rem;
+    position: relative;
+}
+
+/* Spooky Background Effects */
+.cemetery::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.cemetery>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.cemeteryHeader {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    text-align: center;
+}
+
+.cemeteryTitle {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(90deg, #a78bfa 0%, #ec4899 50%, #ef4444 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(167, 139, 250, 0.3);
+}
+
+.cemeterySubtitle {
+    font-size: 1.125rem;
+    color: #cbd5e1;
+    margin: 0 0 1.5rem 0;
+}
+
+.backLink {
+    display: inline-block;
+    color: #a78bfa;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.backLink:hover {
+    background: rgba(167, 139, 250, 0.1);
+    border-color: rgba(167, 139, 250, 0.5);
+}
+
+/* Stats Grid */
+.statsGrid {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.statCard {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.statIcon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.statValue {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #f59e0b;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tab Navigation */
+.tabs {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 0.75rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.activeTab {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+}
+
+/* Hall of Fame */
+.hallOfFame {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hall Title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 2rem 0;
+    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.leaderboardItem {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s;
+}
+
+.leaderboardItem:hover {
+    transform: translateX(8px);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.topThree {
+    border: 2px solid rgba(251, 191, 36, 0.5);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.rank {
+    font-size: 2.5rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.leaderboardInfo {
+    flex: 1;
+}
+
+.leaderboardName {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 0.25rem;
+}
+
+.leaderboardType {
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.leaderboardLoss {
+    text-align: right;
+}
+
+.lossAmount {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ef4444;
+    margin-bottom: 0.25rem;
+}
+
+.lossLabel {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+/* Trending */
+.trending {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.trendingTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 2rem 0;
+    background: linear-gradient(90deg, #ec4899 0%, #ef4444 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.trendingItem {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+}
+
+.trendingItem:hover {
+    border-color: rgba(236, 72, 153, 0.5);
+    transform: translateX(4px);
+}
+
+.trendingBadge {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.trendingInfo {
+    flex: 1;
+}
+
+.trendingName {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 0.25rem;
+}
+
+.trendingStats {
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+/* Controls */
+.controls {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #e2e8f0;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+}
+
+.searchInput::placeholder {
+    color: #64748b;
+}
+
+.filterButtons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filterBtn {
+    padding: 0.75rem 1.25rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterBtn:hover {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.filterBtn.active {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+}
+
+/* Empty State */
+.emptyState {
+    max-width: 600px;
+    margin: 4rem auto;
+    text-align: center;
+    padding: 3rem;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+}
+
+.emptyIcon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.emptyState h3 {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    margin: 0 0 0.5rem 0;
+}
+
+.emptyState p {
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Tombstones Grid */
+.tombstonesGrid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+/* Tombstone Card */
+.tombstone {
+    background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+    border: 2px solid rgba(100, 116, 139, 0.3);
+    border-radius: 16px 16px 8px 8px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.tombstone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.5), transparent);
+}
+
+.tombstone:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.tombstoneHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.skull {
+    font-size: 2.5rem;
+}
+
+.rip {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #64748b;
+    font-family: serif;
+}
+
+.tokenInfo {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tokenSymbol {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ef4444;
+    margin-bottom: 0.25rem;
+}
+
+.tokenName {
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.deathDate {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.scamTypeBadge {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.scamStats {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.scamStat {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #fbbf24;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.warnings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.warning {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #fca5a5;
+    line-height: 1.4;
+}
+
+.address {
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cemetery {
+        padding: 1rem;
+    }
+
+    .cemeteryTitle {
+        font-size: 2rem;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tombstonesGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .filterButtons {
+        flex-direction: column;
+    }
+
+    .filterBtn {
+        width: 100%;
+    }
+
+    .leaderboardItem {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .rank {
+        font-size: 3rem;
+    }
+}

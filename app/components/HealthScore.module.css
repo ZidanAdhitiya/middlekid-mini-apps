@@ -1,0 +1,287 @@
+.container {
+    margin: 2rem 0;
+}
+
+.card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(90deg, #a78bfa 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.rank {
+    background: rgba(167, 139, 250, 0.2);
+    color: #a78bfa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.scoreSection {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.circularProgress {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.progressCircle {
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.scoreText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.scoreNumber {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.scoreLabel {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.grade {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.scoreInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.shareButton {
+    background: #1DA1F2;
+    color: white;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(29, 161, 242, 0.3);
+}
+
+.shareButton:hover {
+    background: #1A91DA;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.4);
+}
+
+.shareButton:active {
+    transform: translateY(0);
+}
+
+.breakdownButton {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.breakdownButton:hover {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.insights {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.strengthsSection,
+.weaknessesSection {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.strengthsSection h4,
+.weaknessesSection h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
+.strengthsSection ul,
+.weaknessesSection ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    list-style: none;
+}
+
+.strengthsSection li,
+.weaknessesSection li {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.strengthsSection li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.weaknessesSection li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Breakdown Section */
+.breakdown {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.breakdown h4 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.factorsGrid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.factor {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.factorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.factorName {
+    font-weight: 600;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+}
+
+.factorPoints {
+    font-weight: 700;
+    color: #a78bfa;
+    font-size: 0.875rem;
+}
+
+.factorBar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.factorProgress {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease-out;
+}
+
+.factorDescription {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .scoreSection {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .circularProgress {
+        margin-bottom: 1rem;
+    }
+
+    .scoreInfo {
+        width: 100%;
+    }
+}

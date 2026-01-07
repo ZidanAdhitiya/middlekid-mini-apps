@@ -64,11 +64,11 @@ export async function detectInputType(input: string): Promise<InputDetectionResu
 
 /**
  * Checks if an address is a smart contract or regular wallet
- * Uses contract code detection
+ * Uses contract code detection with multiple fallbacks
  */
 async function checkIfContract(address: string): Promise<InputDetectionResult> {
+    // Method 1: Try Blockscout API
     try {
-        // Try to fetch contract code
         const response = await fetch(`https://base.blockscout.com/api/v2/addresses/${address}`);
 
         if (response.ok) {
@@ -78,38 +78,66 @@ async function checkIfContract(address: string): Promise<InputDetectionResult> {
             if (data.is_contract) {
                 return {
                     type: 'TOKEN_CONTRACT',
-                    confidence: 90,
-                    reason: 'Address contains smart contract code'
+                    confidence: 95,
+                    reason: 'Verified as smart contract via Blockscout API'
                 };
             } else {
                 return {
                     type: 'WALLET',
-                    confidence: 90,
-                    reason: 'Address is an Externally Owned Account (EOA)'
+                    confidence: 95,
+                    reason: 'Verified as Externally Owned Account (EOA) via Blockscout API'
                 };
             }
         }
     } catch (error) {
-        console.error('Error checking contract:', error);
+        console.log('Blockscout API unavailable, trying RPC fallback');
     }
 
-    // Fallback: use simple heuristics
-    // Contracts often end in repeated patterns or have low entropy
-    const lastChars = address.slice(-8);
-    const uniqueChars = new Set(lastChars.split('')).size;
+    // Method 2: Try RPC eth_getCode check
+    try {
+        const rpcUrl = process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org';
+        const rpcResponse = await fetch(rpcUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_getCode',
+                params: [address, 'latest'],
+                id: 1
+            })
+        });
 
-    if (uniqueChars <= 3) {
-        return {
-            type: 'TOKEN_CONTRACT',
-            confidence: 60,
-            reason: 'Pattern suggests contract (low entropy in address)'
-        };
+        if (rpcResponse.ok) {
+            const rpcData = await rpcResponse.json();
+            const code = rpcData.result;
+
+            // "0x" means no code = EOA/Wallet
+            // Anything else means contract
+            if (code === '0x' || code === '0x0') {
+                return {
+                    type: 'WALLET',
+                    confidence: 90,
+                    reason: 'Verified as wallet (no contract code) via RPC'
+                };
+            } else {
+                return {
+                    type: 'TOKEN_CONTRACT',
+                    confidence: 90,
+                    reason: 'Verified as contract (has bytecode) via RPC'
+                };
+            }
+        }
+    } catch (error) {
+        console.log('RPC check failed, using default assumption');
     }
 
+    // Fallback: Default to WALLET
+    // Most user inputs are wallet addresses, not contracts
+    // Better UX to assume wallet than wrongly label as contract
     return {
         type: 'WALLET',
-        confidence: 70,
-        reason: 'Pattern suggests human wallet (high entropy)'
+        confidence: 60,
+        reason: 'Unable to verify on-chain, defaulting to wallet address'
     };
 }
 

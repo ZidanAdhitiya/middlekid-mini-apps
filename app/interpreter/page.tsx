@@ -5,6 +5,7 @@ import TransactionInput from '../components/TransactionInput';
 import WarningTranslation from '../components/WarningTranslation';
 import SecurityReport from '../components/SecurityReport';
 import WalletReport from '../components/WalletReport';
+import RegretReport from '../components/RegretReport';
 import { txInterpreter } from '../lib/tx-interpreter/engine';
 import { TranslatedWarning } from '../lib/tx-interpreter/types';
 import { fetchRecentTransactions, FetchedTransaction } from '../lib/tx-interpreter/fetcher';
@@ -12,6 +13,8 @@ import { tokenSecurityAnalyzer, TokenSecurityReport } from '../lib/tx-interprete
 import { walletSecurityAnalyzer } from '../lib/tx-interpreter/wallet-analyzer';
 import { WalletAnalysisReport } from '../lib/tx-interpreter/wallet-types';
 import { detectInputType, InputType } from '../lib/tx-interpreter/address-detector';
+import { regretCalculator } from '../lib/tx-interpreter/regret-calculator';
+import { RegretReport as RegretReportType } from '../lib/tx-interpreter/regret-types';
 import { alchemyAPI } from '../lib/alchemy';
 import styles from './page.module.css';
 
@@ -27,6 +30,17 @@ const LOADING_MESSAGES = [
     "Sedang nge-stalk wallet kamu... 👀"
 ];
 
+// Time Machine specific loading messages
+const TIME_MACHINE_MESSAGES = [
+    "⏰ Time traveling ke masa lalu...",
+    "📜 Fetching transaction history dari blockchain...",
+    "💰 Getting prices untuk semua token...",
+    "💔 Menghitung regret kamu...",
+    "🧻 Detecting paper hands moments...",
+    "💎 Mencari diamond hands wins...",
+    "📊 Analyzing trading patterns..."
+];
+
 export default function InterpreterPage() {
     const [warnings, setWarnings] = useState<TranslatedWarning[]>([]);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -34,8 +48,10 @@ export default function InterpreterPage() {
     const [selectedAddress, setSelectedAddress] = useState<string>('');
     const [securityReport, setSecurityReport] = useState<TokenSecurityReport | null>(null);
     const [walletReport, setWalletReport] = useState<WalletAnalysisReport | null>(null);
+    const [regretReport, setRegretReport] = useState<RegretReportType | null>(null);
     const [inputType, setInputType] = useState<InputType | null>(null);
     const [loadingMessage, setLoadingMessage] = useState<string>('');
+    const [activeTab, setActiveTab] = useState<'security' | 'regret'>('security');
 
     const handleAnalyze = async (data: string) => {
         setIsAnalyzing(true);
@@ -65,8 +81,10 @@ export default function InterpreterPage() {
         // Reset all reports
         setSecurityReport(null);
         setWalletReport(null);
+        setRegretReport(null);
         setFetchedTxs([]);
         setWarnings([]);
+        setActiveTab('security');
 
         // Set random loading message
         const randomMessage = LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
@@ -86,6 +104,24 @@ export default function InterpreterPage() {
                 setLoadingMessage('Menganalisis wallet personal... 👤');
                 const walletAnalysis = await walletSecurityAnalyzer.analyzeWallet(address);
                 setWalletReport(walletAnalysis);
+
+                // Also run Time Machine Analysis
+                setLoadingMessage(TIME_MACHINE_MESSAGES[0]);
+                try {
+                    // Show progress messages
+                    const progressInterval = setInterval(() => {
+                        const randomMsg = TIME_MACHINE_MESSAGES[Math.floor(Math.random() * TIME_MACHINE_MESSAGES.length)];
+                        setLoadingMessage(randomMsg);
+                    }, 3000);
+
+                    const regretAnalysis = await regretCalculator.analyzeWalletRegrets(address, 8453, 30);
+                    clearInterval(progressInterval);
+                    setRegretReport(regretAnalysis);
+                    console.log('🔮 Regret analysis complete:', regretAnalysis);
+                } catch (regretError) {
+                    console.error('Regret analysis failed:', regretError);
+                    // Don't block the main flow if regret analysis fails
+                }
 
             } else if (detection.type === 'TOKEN_CONTRACT') {
                 // Analyze as TOKEN
@@ -231,9 +267,31 @@ export default function InterpreterPage() {
                     </div>
                 )}
 
-                {/* Conditional Rendering Based on Input Type */}
-                {walletReport && inputType === 'WALLET' && (
+                {/* Tab Switcher for Wallet Analysis */}
+                {inputType === 'WALLET' && (walletReport || regretReport) && !isAnalyzing && (
+                    <div className={styles.tabSwitcher}>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'security' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('security')}
+                        >
+                            🛡️ Security Analysis
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'regret' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('regret')}
+                        >
+                            🔮 Time Machine Analysis
+                        </button>
+                    </div>
+                )}
+
+                {/* Conditional Rendering Based on Active Tab */}
+                {walletReport && inputType === 'WALLET' && activeTab === 'security' && (
                     <WalletReport report={walletReport} />
+                )}
+
+                {regretReport && inputType === 'WALLET' && activeTab === 'regret' && (
+                    <RegretReport report={regretReport} />
                 )}
 
                 {securityReport && inputType === 'TOKEN_CONTRACT' && (

@@ -1,0 +1,528 @@
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Hero Card - Emotional Damage */
+.heroCard {
+    background: linear-gradient(135deg, #ff3366 0%, #ff6b9d 100%);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 40px rgba(255, 51, 102, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.heroCard::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.damageEmoji {
+    font-size: 80px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.heroTitle {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.damageScore {
+    font-size: 96px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.scoreMax {
+    font-size: 48px;
+    opacity: 0.8;
+}
+
+.rank {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.95;
+}
+
+.breakdown {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    backdrop-filter: blur(10px);
+}
+
+.breakdownItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.breakdownItem:last-child {
+    border-bottom: none;
+}
+
+.breakdownLabel {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.breakdownValue {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.shareButton {
+    background: white;
+    color: #ff3366;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    margin-top: 8px;
+}
+
+.shareButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.statCard {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.statIcon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.statValue {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.statLabel {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* Biggest Regret */
+.biggestRegret {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 51, 102, 0.3);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.regretCard {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.regretHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.tokenSymbol {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ff3366;
+}
+
+.tokenName {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.regretTimeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.timelineEvent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.eventLabel {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.eventDate {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.eventValue {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.timelineDivider {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.holdDuration {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.regretCalculation {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.calcRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calcRow:last-child {
+    border-bottom: none;
+}
+
+.profitMade {
+    color: #4ade80;
+    font-weight: 700;
+}
+
+.wouldBe {
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+.missedRow {
+    font-size: 18px;
+    font-weight: 700;
+    padding-top: 16px;
+}
+
+.missed {
+    color: #ff3366;
+    font-size: 24px;
+}
+
+.roastMessage {
+    background: rgba(255, 51, 102, 0.2);
+    border-left: 4px solid #ff3366;
+    border-radius: 8px;
+    padding: 16px;
+    color: rgba(255, 255, 255, 0.95);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* All Regrets List */
+.allRegrets {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.regretsList {
+    display: grid;
+    gap: 12px;
+}
+
+.miniRegretCard {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.miniRegretCard:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(4px);
+}
+
+.miniHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.miniToken {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff3366;
+}
+
+.miniMissed {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ff6b9d;
+}
+
+.miniDetails {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Diamond Hands Wins */
+.diamondHands {
+    background: linear-gradient(135deg, rgba(78, 237, 180, 0.1) 0%, rgba(78, 237, 180, 0.05) 100%);
+    border: 2px solid rgba(78, 237, 180, 0.3);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.winsList {
+    display: grid;
+    gap: 16px;
+}
+
+.winCard {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.winHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.winToken {
+    font-size: 24px;
+    font-weight: 700;
+    color: #4eeda4;
+}
+
+.winGain {
+    font-size: 28px;
+    font-weight: 800;
+    color: #4ade80;
+}
+
+.winDetails {
+    margin-bottom: 16px;
+}
+
+.winRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.winRow:last-child {
+    border-bottom: none;
+}
+
+.gainValue {
+    color: #4ade80;
+    font-weight: 700;
+}
+
+.praiseMessage {
+    background: rgba(78, 237, 180, 0.1);
+    border-left: 4px solid #4eeda4;
+    border-radius: 8px;
+    padding: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+}
+
+/* Patience Card */
+.patienceCard {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+}
+
+.patienceScore {
+    font-size: 64px;
+    font-weight: 900;
+    color: #fff;
+    margin: 20px 0;
+}
+
+.patienceBar {
+    width: 100%;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.patienceFill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24 0%, #4ade80 100%);
+    border-radius: 12px;
+    transition: width 1s ease;
+}
+
+.patienceText {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Summary */
+.summary {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.summary p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .heroCard {
+        padding: 24px;
+    }
+
+    .damageEmoji {
+        font-size: 60px;
+    }
+
+    .damageScore {
+        font-size: 72px;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Empty State */
+.emptyState {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+}
+
+.emptyTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.emptyText {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.emptyHint {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+    padding: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    max-width: 500px;
+    margin: 0 auto;
+}

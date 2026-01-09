@@ -5,6 +5,7 @@ import type { StrategyRecommendation } from '../lib/options/strategy-mapper';
 import type { ThetanutsQuote } from '../lib/options/thetanuts-pricing';
 import { formatPremium, formatExpiry } from '../lib/options/thetanuts-pricing';
 import WhatIfSimulator from './WhatIfSimulator';
+import { PaymentModal } from './PaymentModal';
 import styles from './OptionRecommendationCard.module.css';
 
 interface OptionRecommendationCardProps {
@@ -22,20 +23,25 @@ export default function OptionRecommendationCard({
     currentPrice,
     tokenSymbol
 }: OptionRecommendationCardProps) {
-    const [showCTAModal, setShowCTAModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showSimulator, setShowSimulator] = useState(false);
+    const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+    const [txHash, setTxHash] = useState('');
 
     const handleProtectClick = () => {
         console.log('🔒 Protect Next Trade clicked');
         console.log('Strategy:', strategy);
         console.log('Quote:', quote);
 
-        // For now, just show a modal or log
-        // In production, this would redirect to Thetanuts platform
-        setShowCTAModal(true);
+        // Show payment modal
+        setShowPaymentModal(true);
+    };
 
-        // Auto-close modal after 3 seconds
-        setTimeout(() => setShowCTAModal(false), 3000);
+    const handlePaymentSuccess = (hash: string) => {
+        console.log('✅ Payment successful:', hash);
+        setTxHash(hash);
+        setPurchaseSuccess(true);
+        setShowPaymentModal(false);
     };
 
     return (
@@ -114,14 +120,35 @@ export default function OptionRecommendationCard({
                 <span className={styles.brand}>Thetanuts V4 🥜</span>
             </div>
 
-            {/* CTA Modal */}
-            {showCTAModal && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <span className={styles.modalIcon}>✅</span>
-                        <p className={styles.modalText}>Feature coming soon!</p>
-                        <p className={styles.modalSubtext}>Integration with Thetanuts platform in progress</p>
+            {/* Payment Modal */}
+            {showPaymentModal && quote && currentPrice && tokenSymbol && (
+                <PaymentModal
+                    quote={quote}
+                    tokenSymbol={tokenSymbol}
+                    currentPrice={currentPrice}
+                    onClose={() => setShowPaymentModal(false)}
+                    onSuccess={handlePaymentSuccess}
+                />
+            )}
+
+            {/* Purchase Success Banner */}
+            {purchaseSuccess && txHash && (
+                <div className={styles.successBanner}>
+                    <div className={styles.successIcon}>✅</div>
+                    <div>
+                        <div className={styles.successText}>Protection Activated!</div>
+                        <div className={styles.successSubtext}>
+                            Your {tokenSymbol} position is now protected
+                        </div>
                     </div>
+                    <a
+                        href={`https://sepolia.basescan.org/tx/${txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.successLink}
+                    >
+                        View TX ↗
+                    </a>
                 </div>
             )}
         </div>

@@ -129,18 +129,35 @@ class RegretCalculator {
                     return enriched;
                 }
 
-                console.log('⚠️ No real transactions found, using MOCK data for UI testing');
-                return this.generateMockTransactions(address, fromTimestamp, toTimestamp);
+                console.log('⚠️ No real transactions found for this wallet');
+
+                // Only use mock data if explicitly enabled in development
+                const USE_MOCK_FALLBACK = process.env.NEXT_PUBLIC_USE_MOCK_FALLBACK === 'true';
+                if (process.env.NODE_ENV === 'development' && USE_MOCK_FALLBACK) {
+                    console.log('📭 Development mode + USE_MOCK_FALLBACK enabled - using MOCK data');
+                    return this.generateMockTransactions(address, fromTimestamp, toTimestamp);
+                }
+
+                // Production: return empty array
+                return [];
             } catch (error) {
-                console.error('Error fetching real data:', error);
-                console.log('⚠️ Falling back to MOCK data');
-                return this.generateMockTransactions(address, fromTimestamp, toTimestamp);
+                console.error('❌ Error fetching real data:', error);
+
+                // Only use mock data if explicitly enabled in development
+                const USE_MOCK_FALLBACK = process.env.NEXT_PUBLIC_USE_MOCK_FALLBACK === 'true';
+                if (process.env.NODE_ENV === 'development' && USE_MOCK_FALLBACK) {
+                    console.log('📭 Error in development mode + USE_MOCK_FALLBACK enabled - falling back to MOCK data');
+                    return this.generateMockTransactions(address, fromTimestamp, toTimestamp);
+                }
+
+                // Production: return empty array
+                return [];
             }
         }
 
-        // If NEXT_PUBLIC_USE_REAL_DATA is not enabled, use mock data
-        console.log('📭 Real data mode disabled - using MOCK data for UI testing');
-        return this.generateMockTransactions(address, fromTimestamp, toTimestamp);
+        // Real data mode not enabled
+        console.log('⚠️ NEXT_PUBLIC_USE_REAL_DATA not enabled');
+        return [];
     }
 
     /**

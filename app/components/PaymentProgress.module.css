@@ -1,0 +1,232 @@
+// Loading progress component for better UX
+
+.progressContainer {
+    padding: var(--spacing-md);
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.progressSteps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    position: relative;
+}
+
+.progressBar {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(59, 130, 246, 0.2);
+    z-index: 0;
+}
+
+.progressBarFill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.step {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.stepCircle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.stepCircle.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.stepCircle.completed {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.stepLabel {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.stepLabel.active {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.stepLabel.completed {
+    color: #10b981;
+}
+
+/* Hint box */
+.hintBox {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-md);
+    font-size: 14px;
+    color: #fbbf24;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+}
+
+.hintBox svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Success celebration */
+.celebration {
+    text-align: center;
+    animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.celebrationIcon {
+    font-size: 80px;
+    margin-bottom: var(--spacing-md);
+    animation: rotate 2s ease-in-out;
+}
+
+@Keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(15deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.nextSteps {
+    text-align: left;
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.nextSteps h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #10b981;
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.nextSteps ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.nextSteps li {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    padding-left: var(--spacing-sm);
+}
+
+/* Gas estimation display */
+.gasEstimate {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.gasEstimate h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6366f1;
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.gasRow {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-xs) 0;
+    font-size: 14px;
+}
+
+.gasRow.total {
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-sm);
+    font-weight: 700;
+    color: #6366f1;
+}
+
+@media (max-width: 768px) {
+    .stepLabel {
+        font-size: 9px;
+    }
+
+    .stepCircle {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+
+    .celebrationIcon {
+        font-size: 60px;
+    }
+}

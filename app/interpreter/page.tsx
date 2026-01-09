@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TransactionInput from '../components/TransactionInput';
 import WarningTranslation from '../components/WarningTranslation';
 import SecurityReport from '../components/SecurityReport';
 import WalletReport from '../components/WalletReport';
 import RegretReport from '../components/RegretReport';
+import { ConnectWalletButton, useWallet } from '../components/ConnectWalletButton';
 import { txInterpreter } from '../lib/tx-interpreter/engine';
 import { TranslatedWarning } from '../lib/tx-interpreter/types';
 import { fetchRecentTransactions, FetchedTransaction } from '../lib/tx-interpreter/fetcher';
@@ -52,6 +53,17 @@ export default function InterpreterPage() {
     const [inputType, setInputType] = useState<InputType | null>(null);
     const [loadingMessage, setLoadingMessage] = useState<string>('');
     const [activeTab, setActiveTab] = useState<'security' | 'regret'>('security');
+
+    // Get connected wallet
+    const { address: connectedAddress, isConnected } = useWallet();
+
+    // Auto-analyze connected wallet
+    useEffect(() => {
+        if (isConnected && connectedAddress && !isAnalyzing) {
+            console.log('✅ Wallet connected, auto-analyzing:', connectedAddress);
+            handleAddressSubmit(connectedAddress);
+        }
+    }, [connectedAddress, isConnected]);
 
     const handleAnalyze = async (data: string) => {
         setIsAnalyzing(true);
@@ -247,6 +259,16 @@ export default function InterpreterPage() {
                             dengan bahasa yang mudah dipahami.
                         </p>
                     </div>
+                </div>
+
+                {/* Wallet Connect Button */}
+                <div className={styles.walletConnectSection}>
+                    <ConnectWalletButton />
+                    {isConnected && connectedAddress && (
+                        <div className={styles.connectedBanner}>
+                            🔗 Analyzing YOUR wallet: {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
+                        </div>
+                    )}
                 </div>
 
                 <TransactionInput

@@ -78,6 +78,8 @@ export class TransactionHistoryFetcher {
         const chainIdStr = chainId.toString();
 
         try {
+            console.log(`🔍 Fetching ERC20 transfers for ${address} on chain ${chainId}`);
+
             // Fetch transfers FROM wallet (sells)
             const outgoing = await alchemyAPI.getAssetTransfers({
                 fromAddress: address,
@@ -94,11 +96,21 @@ export class TransactionHistoryFetcher {
                 maxCount: 100
             });
 
+            console.log(`✅ Alchemy API success:`, {
+                outgoing: outgoing?.transfers?.length || 0,
+                incoming: incoming?.transfers?.length || 0
+            });
+
             // Combine and filter by time period
             const allTransfers = [
                 ...(outgoing?.transfers || []),
                 ...(incoming?.transfers || [])
             ];
+
+            if (allTransfers.length === 0) {
+                console.log('⚠️ No transfers from Alchemy, trying BaseScan fallback...');
+                return await this.fetchFromBaseScan(address, chainId, daysBack);
+            }
 
             // Filter by date
             const cutoffDate = new Date();
@@ -109,11 +121,83 @@ export class TransactionHistoryFetcher {
                 return txDate >= cutoffDate;
             });
 
+            console.log(`📊 Filtered ${filtered.length} transfers within ${daysBack} days`);
             return filtered as TokenTransfer[];
 
         } catch (error) {
-            console.error('Error fetching from Alchemy:', error);
-            // Try BaseScan fallback if needed
+            console.error('❌ Alchemy API error:', error);
+            console.log('🔄 Trying BaseScan fallback...');
+
+            try {
+                return await this.fetchFromBaseScan(address, chainId, daysBack);
+            } catch (fallbackError) {
+                console.error('❌ BaseScan fallback also failed:', fallbackError);
+                return [];
+            }
+        }
+    }
+
+    /**
+     * Fallback: Fetch transactions from BaseScan API
+     */
+    private async fetchFromBaseScan(
+        address: string,
+        chainId: number,
+        daysBack: number
+    ): Promise<TokenTransfer[]> {
+        // Only works for Base network (chainId 8453)
+        if (chainId !== 8453) {
+            console.log('⚠️ BaseScan only supports Base network, skipping fallback');
+            return [];
+        }
+
+        const apiKey = process.env.NEXT_PUBLIC_BASESCAN_API_KEY;
+        if (!apiKey) {
+            console.error('❌ NEXT_PUBLIC_BASESCAN_API_KEY not configured');
+            return [];
+        }
+
+        try {
+            console.log('🔍 Fetching from BaseScan API...');
+
+            const url = `https://api.basescan.org/api?module=account&action=tokentx&address=${address}&sort=desc&apikey=${apiKey}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.status !== '1' || !data.result || !Array.isArray(data.result)) {
+                console.error('❌ BaseScan API error:', data.message || 'Unknown error');
+                return [];
+            }
+
+            console.log(`✅ BaseScan API success: ${data.result.length} transfers found`);
+
+            // Convert BaseScan format to Alchemy format
+            const cutoffTimestamp = Math.floor(Date.now() / 1000) - (daysBack * 24 * 60 * 60);
+
+            const transfers: TokenTransfer[] = data.result
+                .filter((tx: any) => parseInt(tx.timeStamp) >= cutoffTimestamp)
+                .map((tx: any) => ({
+                    hash: tx.hash,
+                    from: tx.from,
+                    to: tx.to,
+                    value: tx.value,
+                    asset: tx.tokenSymbol,
+                    rawContract: {
+                        address: tx.contractAddress,
+                        decimal: tx.tokenDecimal
+                    },
+                    metadata: {
+                        blockTimestamp: new Date(parseInt(tx.timeStamp) * 1000).toISOString()
+                    },
+                    category: 'erc20'
+                }));
+
+            console.log(`📊 BaseScan filtered: ${transfers.length} transfers within ${daysBack} days`);
+            return transfers;
+
+        } catch (error) {
+            console.error('❌ BaseScan API fetch error:', error);
             return [];
         }
     }

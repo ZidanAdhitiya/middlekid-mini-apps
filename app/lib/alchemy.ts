@@ -38,8 +38,9 @@ class AlchemyAPI {
 
     constructor() {
         if (!ALCHEMY_API_KEY) {
-            console.error('ALCHEMY_API_KEY is not defined');
-            this.apiKey = 'dummy-key';
+            // Silently use dummy key for development/testing
+            console.warn('⚠️ ALCHEMY_API_KEY not set - using mock data mode');
+            this.apiKey = 'demo-key-for-testing';
         } else {
             this.apiKey = ALCHEMY_API_KEY;
         }

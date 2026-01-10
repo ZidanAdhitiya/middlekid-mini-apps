@@ -1,15 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TransactionInput from '../components/TransactionInput';
 import WarningTranslation from '../components/WarningTranslation';
 import SecurityReport from '../components/SecurityReport';
+import WalletReport from '../components/WalletReport';
+import RegretReport from '../components/RegretReport';
+import { ConnectWalletButton, useWallet } from '../components/ConnectWalletButton';
 import { txInterpreter } from '../lib/tx-interpreter/engine';
 import { TranslatedWarning } from '../lib/tx-interpreter/types';
 import { fetchRecentTransactions, FetchedTransaction } from '../lib/tx-interpreter/fetcher';
 import { tokenSecurityAnalyzer, TokenSecurityReport } from '../lib/tx-interpreter/security';
+import { walletSecurityAnalyzer } from '../lib/tx-interpreter/wallet-analyzer';
+import { WalletAnalysisReport } from '../lib/tx-interpreter/wallet-types';
+import { detectInputType, InputType } from '../lib/tx-interpreter/address-detector';
+import { regretCalculator } from '../lib/tx-interpreter/regret-calculator';
+import { RegretReport as RegretReportType } from '../lib/tx-interpreter/regret-types';
 import { alchemyAPI } from '../lib/alchemy';
 import styles from './page.module.css';
+
+// Humanized Loading Messages
+const LOADING_MESSAGES = [
+    "Sedang mengintip isi dompet... 🔍",
+    "Mengecek apakah ada tuyul digital... 👻",
+    "Menghitung dosa-dosa transaksi... 📊",
+    "Mencari jejak scammer... 🕵️",
+    "Menganalisis pola bot... 🤖",
+    "Memeriksa token mencurigakan... ⚠️",
+    "Mengaudit riwayat jajanmu di blockchain... 💸",
+    "Sedang nge-stalk wallet kamu... 👀"
+];
+
+// Time Machine specific loading messages
+const TIME_MACHINE_MESSAGES = [
+    "⏰ Time traveling ke masa lalu...",
+    "📜 Fetching transaction history dari blockchain...",
+    "💰 Getting prices untuk semua token...",
+    "💔 Menghitung regret kamu...",
+    "🧻 Detecting paper hands moments...",
+    "💎 Mencari diamond hands wins...",
+    "📊 Analyzing trading patterns..."
+];
 
 export default function InterpreterPage() {
     const [warnings, setWarnings] = useState<TranslatedWarning[]>([]);
@@ -17,6 +48,22 @@ export default function InterpreterPage() {
     const [fetchedTxs, setFetchedTxs] = useState<FetchedTransaction[]>([]);
     const [selectedAddress, setSelectedAddress] = useState<string>('');
     const [securityReport, setSecurityReport] = useState<TokenSecurityReport | null>(null);
+    const [walletReport, setWalletReport] = useState<WalletAnalysisReport | null>(null);
+    const [regretReport, setRegretReport] = useState<RegretReportType | null>(null);
+    const [inputType, setInputType] = useState<InputType | null>(null);
+    const [loadingMessage, setLoadingMessage] = useState<string>('');
+    const [activeTab, setActiveTab] = useState<'security' | 'regret'>('security');
+
+    // Get connected wallet
+    const { address: connectedAddress, isConnected } = useWallet();
+
+    // Auto-analyze connected wallet
+    useEffect(() => {
+        if (isConnected && connectedAddress && !isAnalyzing) {
+            console.log('✅ Wallet connected, auto-analyzing:', connectedAddress);
+            handleAddressSubmit(connectedAddress);
+        }
+    }, [connectedAddress, isConnected]);
 
     const handleAnalyze = async (data: string) => {
         setIsAnalyzing(true);
@@ -42,40 +89,98 @@ export default function InterpreterPage() {
     const handleAddressSubmit = async (address: string) => {
         setIsAnalyzing(true);
         setSelectedAddress(address);
+
+        // Reset all reports
         setSecurityReport(null);
+        setWalletReport(null);
+        setRegretReport(null);
         setFetchedTxs([]);
         setWarnings([]);
+        setActiveTab('security');
+
+        // Set random loading message
+        const randomMessage = LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
+        setLoadingMessage(randomMessage);
 
         try {
-            // Run security analysis (always show this)
-            const security = await tokenSecurityAnalyzer.analyzeToken(address);
-            setSecurityReport(security);
+            // Step 1: Detect input type (WALLET, TOKEN_CONTRACT, or TRANSACTION)
+            const detection = await detectInputType(address);
+            setInputType(detection.type);
 
-            // Try to fetch recent transactions (optional)
-            try {
-                const transactions = await fetchRecentTransactions(address);
+            console.log('🔍 Input detected as:', detection.type, '- Confidence:', detection.confidence + '%');
+            console.log('📝 Reason:', detection.reason);
 
-                if (transactions.length > 0) {
-                    setFetchedTxs(transactions);
+            // Step 2: Route to appropriate analyzer
+            if (detection.type === 'WALLET') {
+                // Analyze as WALLET
+                setLoadingMessage('Menganalisis wallet personal... 👤');
+                const walletAnalysis = await walletSecurityAnalyzer.analyzeWallet(address);
+                setWalletReport(walletAnalysis);
 
-                    // Analyze first transaction as example
-                    const firstTx = transactions[0];
-                    const result = await txInterpreter.interpret({
-                        to: firstTx.to || undefined,
-                        from: firstTx.from,
-                        data: firstTx.data,
-                        value: firstTx.value
-                    });
+                // Also run Time Machine Analysis
+                setLoadingMessage(TIME_MACHINE_MESSAGES[0]);
+                try {
+                    // Show progress messages
+                    const progressInterval = setInterval(() => {
+                        const randomMsg = TIME_MACHINE_MESSAGES[Math.floor(Math.random() * TIME_MACHINE_MESSAGES.length)];
+                        setLoadingMessage(randomMsg);
+                    }, 3000);
 
-                    setWarnings(result.translations);
+                    const regretAnalysis = await regretCalculator.analyzeWalletRegrets(address, 8453, 30);
+                    clearInterval(progressInterval);
+                    setRegretReport(regretAnalysis);
+                    console.log('🔮 Regret analysis complete:', regretAnalysis);
+                } catch (regretError) {
+                    console.error('Regret analysis failed:', regretError);
+                    // Don't block the main flow if regret analysis fails
                 }
-                // If no transactions, just show security report (don't error)
-            } catch (txError) {
-                console.log('No transactions found, showing security report only');
+
+            } else if (detection.type === 'TOKEN_CONTRACT') {
+                // Analyze as TOKEN
+                setLoadingMessage('Menganalisis token contract... 🪙');
+                const security = await tokenSecurityAnalyzer.analyzeToken(address);
+                setSecurityReport(security);
+
+                // Try to fetch recent transactions (optional)
+                try {
+                    const transactions = await fetchRecentTransactions(address);
+                    if (transactions.length > 0) {
+                        setFetchedTxs(transactions);
+
+                        // Analyze first transaction as example
+                        const firstTx = transactions[0];
+                        const result = await txInterpreter.interpret({
+                            to: firstTx.to || undefined,
+                            from: firstTx.from,
+                            data: firstTx.data,
+                            value: firstTx.value
+                        });
+
+                        setWarnings(result.translations);
+                    }
+                } catch (txError) {
+                    console.log('No transactions found, showing security report only');
+                }
+
+            } else if (detection.type === 'TRANSACTION') {
+                // Handle transaction hash - call the existing handler
+                console.log('📜 Detected as transaction hash, routing to tx analyzer...');
+                setIsAnalyzing(false); // Reset since handleTxHashSubmit will set it again
+
+                // Call the handleTxHashSubmit function (it already exists!)
+                await handleTxHashSubmit(address);
+                return;
+
+            } else {
+                // Invalid input
+                alert('Input tidak valid! Pastikan format address atau hash benar (0x...)');
+                setIsAnalyzing(false);
+                return;
             }
+
         } catch (error) {
-            console.error('Security analysis error:', error);
-            alert('Error: Gagal menganalisis address. Pastikan address valid.');
+            console.error('Analysis error:', error);
+            alert('Error: Gagal menganalisis. Pastikan address valid dan coba lagi.');
         } finally {
             setIsAnalyzing(false);
         }
@@ -156,16 +261,67 @@ export default function InterpreterPage() {
                     </div>
                 </div>
 
+                {/* Wallet Connect Button */}
+                <div className={styles.walletConnectSection}>
+                    <ConnectWalletButton />
+                    {isConnected && connectedAddress && (
+                        <div className={styles.connectedBanner}>
+                            🔗 Analyzing YOUR wallet: {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
+                        </div>
+                    )}
+                </div>
+
                 <TransactionInput
                     onAnalyze={handleAnalyze}
                     onAddressSubmit={handleAddressSubmit}
                     onTxHashSubmit={handleTxHashSubmit}
                 />
 
-                <SecurityReport
-                    report={securityReport}
-                    tokenAddress={selectedAddress}
-                />
+                {/* Show Input Type Detection Badge */}
+                {inputType && !isAnalyzing && (
+                    <div className={styles.detectionBadge}>
+                        <span className={styles.badgeLabel}>Mode Analisis:</span>
+                        <span className={styles.badgeValue}>
+                            {inputType === 'WALLET' && '👤 Wallet Personal'}
+                            {inputType === 'TOKEN_CONTRACT' && '🪙 Token Contract'}
+                            {inputType === 'TRANSACTION' && '📜 Transaction Hash'}
+                        </span>
+                    </div>
+                )}
+
+                {/* Tab Switcher for Wallet Analysis */}
+                {inputType === 'WALLET' && (walletReport || regretReport) && !isAnalyzing && (
+                    <div className={styles.tabSwitcher}>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'security' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('security')}
+                        >
+                            🛡️ Security Analysis
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'regret' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('regret')}
+                        >
+                            🔮 Time Machine Analysis
+                        </button>
+                    </div>
+                )}
+
+                {/* Conditional Rendering Based on Active Tab */}
+                {walletReport && inputType === 'WALLET' && activeTab === 'security' && (
+                    <WalletReport report={walletReport} />
+                )}
+
+                {regretReport && inputType === 'WALLET' && activeTab === 'regret' && (
+                    <RegretReport report={regretReport} />
+                )}
+
+                {securityReport && inputType === 'TOKEN_CONTRACT' && (
+                    <SecurityReport
+                        report={securityReport}
+                        tokenAddress={selectedAddress}
+                    />
+                )}
 
                 {fetchedTxs.length > 0 && (
                     <div className={`${styles.txList} glass`}>
@@ -209,7 +365,7 @@ export default function InterpreterPage() {
                 {isAnalyzing ? (
                     <div className={`${styles.loading} glass`}>
                         <div className={styles.spinner}></div>
-                        <p>Menganalisis transaksi...</p>
+                        <p>{loadingMessage || 'Menganalisis transaksi...'}</p>
                     </div>
                 ) : (
                     <WarningTranslation warnings={warnings} />

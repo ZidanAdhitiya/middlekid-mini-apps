@@ -1,0 +1,471 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Hero Card - Main Translation */
+.heroCard {
+    background: linear-gradient(135deg, rgba(30, 30, 40, 0.9), rgba(20, 20, 30, 0.95));
+    border: 2px solid;
+    border-radius: 20px;
+    padding: 40px 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.heroEmoji {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.heroTitle {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.heroDescription {
+    font-size: 18px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 25px;
+}
+
+.heroAction {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+}
+
+.heroAction strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #4ecdc4;
+}
+
+.heroAction p {
+    margin: 0;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Risk Score */
+.riskScore {
+    background: rgba(30, 30, 40, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.riskHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.riskValue {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.riskBar {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.riskFill {
+    height: 100%;
+    transition: width 1s ease-out;
+    border-radius: 6px;
+}
+
+.riskLabel {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
+}
+
+/* Info Grid */
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.infoCard {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.infoCard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.infoIcon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.infoLabel {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.infoValue {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Bot Alert */
+.botAlert {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 51, 51, 0.15));
+    border: 2px solid #ff6b35;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.botHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.botIcon {
+    font-size: 32px;
+}
+
+.botTitle {
+    font-size: 20px;
+    font-weight: 700;
+    flex: 1;
+}
+
+.botConfidence {
+    background: rgba(255, 107, 53, 0.3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.botReason {
+    margin-bottom: 15px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.botIndicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.indicator {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Security Checks */
+.checksSection {
+    margin-bottom: 30px;
+}
+
+.checksSection h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.checksList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.check {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: transform 0.2s;
+}
+
+.check:hover {
+    transform: translateX(5px);
+}
+
+.check.warning {
+    border-left: 4px solid #ffa500;
+}
+
+.check.fail {
+    border-left: 4px solid #ff3333;
+}
+
+.checkEmoji {
+    font-size: 24px;
+}
+
+.checkContent {
+    flex: 1;
+}
+
+.checkName {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.checkMessage {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+}
+
+.checkBadge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.checkBadge.low {
+    background: rgba(78, 205, 196, 0.2);
+    color: #4ecdc4;
+}
+
+.checkBadge.medium {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+}
+
+.checkBadge.high {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+}
+
+.checkBadge.critical {
+    background: rgba(255, 51, 51, 0.2);
+    color: #ff3333;
+}
+
+/* Tokens Section */
+.tokensSection {
+    margin-bottom: 30px;
+}
+
+.tokensSection h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scamBadge {
+    background: rgba(255, 51, 51, 0.2);
+    color: #ff3333;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tokensList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.token {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+}
+
+.token:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.scamToken {
+    border-left: 4px solid #ff3333;
+    background: rgba(255, 51, 51, 0.08);
+}
+
+.tokenHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tokenInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tokenSymbol {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.tokenName {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.tokenBalance {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+.tokenWarnings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.tokenWarning {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    border: 1px solid rgba(255, 107, 53, 0.4);
+}
+
+.scamAlert {
+    background: rgba(255, 51, 51, 0.2);
+    color: #ff3333;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 10px;
+    border: 1px dashed #ff3333;
+}
+
+/* Recommendations */
+.recommendations {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.recommendations h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.recommendations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recommendations li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(78, 205, 196, 0.1);
+    border-left: 3px solid #4ecdc4;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Address Info */
+.addressInfo {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.addressLabel {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.address {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #4ecdc4;
+    word-break: break-all;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .heroCard {
+        padding: 30px 20px;
+    }
+
+    .heroTitle {
+        font-size: 24px;
+    }
+
+    .heroDescription {
+        font-size: 16px;
+    }
+
+    .infoGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

@@ -1,85 +1,210 @@
+/* Premium Chat Widget Container */
 .chatContainer {
   position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 380px;
-  max-width: calc(100vw - 40px);
-  height: 600px;
+  bottom: 95px;
+  right: 24px;
+  width: 420px;
+  max-width: calc(100vw - 48px);
+  height: 650px;
   max-height: calc(100vh - 140px);
   z-index: 9999;
-  animation: slideUp 0.3s ease-out;
+  animation: chatSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes slideUp {
+@keyframes chatSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.95);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* Premium Floating Button */
 .floatingButton {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
+  bottom: 24px;
+  right: 24px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: var(--gradient-primary);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow:
+    0 8px 24px rgba(102, 126, 234, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 0 0 0 rgba(102, 126, 234, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10000;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
+  animation: floatBob 3s ease-in-out infinite;
+}
+
+@keyframes floatBob {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.floatingButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+  animation: shimmerButton 3s infinite;
+}
+
+@keyframes shimmerButton {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+.floatingButton::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0);
+  transform: translate(-50%, -50%);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+  }
 }
 
 .floatingButton:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4), var(--shadow-glow);
+  transform: scale(1.15) rotate(5deg);
+  box-shadow:
+    0 12px 32px rgba(102, 126, 234, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(139, 92, 246, 0.4);
+}
+
+.floatingButton:active {
+  transform: scale(0.95);
 }
 
 .floatingButton.active {
-  background: var(--color-danger);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  animation: none;
+}
+
+.floatingButton.active:hover {
+  box-shadow:
+    0 12px 32px rgba(239, 68, 68, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(239, 68, 68, 0.4);
 }
 
 .floatingButton svg {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   color: white;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
 }
 
+.floatingButton:hover svg {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.floatingButton.active svg {
+  transform: rotate(45deg);
+}
+
+/* Notification Badge */
 .badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 12px;
-  height: 12px;
-  background: var(--color-danger);
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border-radius: 50%;
-  border: 2px solid var(--color-bg-dark);
-  animation: pulse 2s infinite;
+  border: 2.5px solid white;
+  animation: badgePulse 2s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  z-index: 2;
 }
 
+@keyframes badgePulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  }
+
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.8);
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .chatContainer {
-    bottom: 80px;
-    right: 10px;
-    left: 10px;
+    bottom: 85px;
+    right: 16px;
+    left: 16px;
     width: auto;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 110px);
     max-height: none;
   }
 
   .floatingButton {
-    width: 56px;
-    height: 56px;
-    bottom: 16px;
-    right: 16px;
+    width: 60px;
+    height: 60px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .floatingButton svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .badge {
+    width: 12px;
+    height: 12px;
+    top: 6px;
+    right: 6px;
   }
 }

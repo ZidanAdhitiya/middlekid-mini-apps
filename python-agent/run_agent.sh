@@ -22,12 +22,19 @@ source venv/bin/activate
 echo "📚 Installing Python packages..."
 pip install -q flask==3.0.0 flask-cors==4.0.0 openai
 
-# Export environment variables
-# Set your OpenAI API key as environment variable before running:
-# export OPENAI_API_KEY="your-api-key-here"
+# Load environment variables from .env file if it exists
+ENV_FILE="../.env"
+if [ -f "$ENV_FILE" ]; then
+    echo "📄 Loading environment from .env file..."
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
+fi
+
+# Check if OPENAI_API_KEY is set
 if [ -z "$OPENAI_API_KEY" ]; then
     echo "❌ Error: OPENAI_API_KEY environment variable is not set"
-    echo "Please set it first: export OPENAI_API_KEY='your-api-key'"
+    echo "Please either:"
+    echo "  1. Create a .env file in the project root with: OPENAI_API_KEY=your-key"
+    echo "  2. Or run: export OPENAI_API_KEY='your-api-key'"
     exit 1
 fi
 export PORT=8080

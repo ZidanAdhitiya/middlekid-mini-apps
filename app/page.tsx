@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { useAppKitAccount, useAppKit } from '@reown/appkit/react';
 import WalletInput from "./components/WalletInput";
 import TabNavigation, { TabType } from "./components/TabNavigation";
 import PortfolioOverview from "./components/PortfolioOverview";
@@ -14,10 +15,20 @@ import styles from "./page.module.css";
 
 export default function Home() {
   const { context } = useMiniKit();
+  const { address: connectedAddress, isConnected } = useAppKitAccount();
+  const { open } = useAppKit();
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+
+  const handleAnalyzeWallet = () => {
+    if (isConnected && connectedAddress) {
+      handleSearch(connectedAddress);
+    } else {
+      open();
+    }
+  };
 
   const handleSearch = async (address: string) => {
     setIsLoading(true);
@@ -168,31 +179,60 @@ export default function Home() {
         {/* Welcome Message when no data */}
         {!portfolioData && !isLoading && !error && (
           <div className={styles.welcome}>
-            <div className={styles.welcomeIcon}>
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+            <div className={styles.welcomeContent}>
+              <h2 className={styles.welcomeTitle}>
+                <span className={styles.welcomeEmoji}>👋</span>
+                Welcome to MiddleKid
+              </h2>
+              <p className={styles.welcomeSubtitle}>
+                Your intelligent Web3 portfolio companion
+              </p>
+              <p className={styles.welcomeText}>
+                Enter any wallet address above to discover holdings, track DeFi positions,
+                and analyze on-chain activity across multiple networks.
+              </p>
+
+              <button
+                className={styles.analyzeButton}
+                onClick={handleAnalyzeWallet}
+              >
+                {isConnected ? '🔍 Analyze your wallet' : '🔗 Connect Wallet to Start'}
+              </button>
             </div>
-            <h2 className={styles.welcomeTitle}>Welcome to MiddleKid</h2>
-            <p className={styles.welcomeText}>
-              Enter a wallet address above to analyze your Base chain portfolio
-            </p>
-            <div className={styles.features}>
-              <div className={styles.feature}>
-                <div className={styles.featureIcon}>💰</div>
-                <div className={styles.featureText}>Track Token Holdings</div>
-              </div>
-              <div className={styles.feature}>
-                <div className={styles.featureIcon}>🖼️</div>
-                <div className={styles.featureText}>View NFT Collection</div>
-              </div>
-              <div className={styles.feature}>
+
+            <div className={styles.featuresGrid}>
+              <div className={styles.featureCard}>
                 <div className={styles.featureIcon}>📊</div>
-                <div className={styles.featureText}>Portfolio Analytics</div>
+                <div className={styles.featureTitle}>Portfolio Analytics</div>
+                <div className={styles.featureDesc}>Track tokens, NFTs & DeFi positions in real-time</div>
               </div>
-              <div className={styles.feature}>
-                <div className={styles.featureIcon}>⚡</div>
-                <div className={styles.featureText}>Real-time Data</div>
+              <div className={styles.featureCard}>
+                <div className={styles.featureIcon}>⛓️</div>
+                <div className={styles.featureTitle}>Multi-Chain Support</div>
+                <div className={styles.featureDesc}>Ethereum, Base, Arbitrum, Optimism & more</div>
+              </div>
+              <div className={styles.featureCard}>
+                <div className={styles.featureIcon}>💎</div>
+                <div className={styles.featureTitle}>DeFi Detection</div>
+                <div className={styles.featureDesc}>Aave, Lido, Curve, ether.fi, Kinetiq & more</div>
+              </div>
+              <div className={styles.featureCard}>
+                <div className={styles.featureIcon}>🔍</div>
+                <div className={styles.featureTitle}>Deep Insights</div>
+                <div className={styles.featureDesc}>Discover hidden value in your wallet</div>
+              </div>
+            </div>
+
+            <div className={styles.supportedProtocols}>
+              <span className={styles.protocolsLabel}>Supported Protocols:</span>
+              <div className={styles.protocolTags}>
+                <span className={styles.protocolTag}>Aave</span>
+                <span className={styles.protocolTag}>Lido</span>
+                <span className={styles.protocolTag}>Curve</span>
+                <span className={styles.protocolTag}>ether.fi</span>
+                <span className={styles.protocolTag}>Kinetiq</span>
+                <span className={styles.protocolTag}>Hyperlend</span>
+                <span className={styles.protocolTag}>+15 more</span>
               </div>
             </div>
           </div>

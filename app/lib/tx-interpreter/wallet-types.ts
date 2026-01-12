@@ -59,21 +59,15 @@ export interface WalletAnalysisReport {
     overallRisk: 'safe' | 'low' | 'medium' | 'high' | 'critical';
     riskScore: number; // 0-100
 
-    // Core Analysis
+    // Core Analysis - Bot Detection & Behavior
     botDetection: BotDetectionResult;
     statistics: WalletStatistics;
-    tokenHoldings: TokenHolding[];
 
     // Security Checks
     checks: WalletCheck[];
-    scamTokenCount: number;
 
     // Human-readable
     humanTranslation: HumanTranslation;
     summary: string;
     recommendations: string[];
-
-    // 🎮 Gamification (optional for backward compatibility)
-    healthScore?: import('./gamification-types').WalletHealthScore;
-    achievements?: import('./gamification-types').AchievementProgress;
 }

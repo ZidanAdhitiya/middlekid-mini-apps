@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import styles from './TransactionInput.module.css';
 
 interface TransactionInputProps {
@@ -10,6 +11,7 @@ interface TransactionInputProps {
 }
 
 export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashSubmit }: TransactionInputProps) {
+    const { t } = useLanguage();
     const [searchInput, setSearchInput] = useState('');
     const [searchType, setSearchType] = useState<'unknown' | 'address' | 'txhash' | 'contract'>('unknown');
     const [selectedChain, setSelectedChain] = useState<number>(8453); // Default to Base
@@ -50,7 +52,7 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
         } else if (type === 'address' && onAddressSubmit) {
             onAddressSubmit(searchInput);
         } else {
-            alert('Format tidak valid. Masukkan:\n- Transaction Hash: 0x + 64 karakter\n- Address: 0x + 40 karakter');
+            alert(t('interpreter.errors.invalidInput'));
         }
     };
 
@@ -65,19 +67,9 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
 
     return (
         <div className={`${styles.container} glass`}>
-            <h2 className={styles.title}>🔍 Search</h2>
+            <h2 className={styles.title}>🔍 {t('interpreter.search.title')}</h2>
 
             <div className={styles.searchBar}>
-                <select
-                    className={styles.filterDropdown}
-                    value={selectedChain}
-                    onChange={(e) => setSelectedChain(Number(e.target.value))}
-                >
-                    {chains.map(chain => (
-                        <option key={chain.id} value={chain.id}>{chain.name}</option>
-                    ))}
-                </select>
-
                 <div className={styles.searchInputWrapper}>
                     <input
                         type="text"
@@ -85,14 +77,14 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
                         value={searchInput}
                         onChange={(e) => handleInputChange(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="Search by Address / Txn Hash / Token / Contract Address"
+                        placeholder={t('interpreter.search.placeholder')}
                     />
 
                     {searchType !== 'unknown' && searchInput && (
                         <span className={styles.detectedType}>
-                            {searchType === 'txhash' ? '📜 Transaction' :
-                                searchType === 'address' ? '👤 Address' :
-                                    '❓ Unknown'}
+                            {searchType === 'txhash' ? `📜 ${t('interpreter.search.detect.tx')}` :
+                                searchType === 'address' ? `👤 ${t('interpreter.search.detect.address')}` :
+                                    `❓ ${t('interpreter.search.detect.unknown')}`}
                         </span>
                     )}
                 </div>
@@ -109,7 +101,7 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
             </div>
 
             <div className={styles.examples}>
-                <p className={styles.exampleLabel}>Coba contoh:</p>
+                <p className={styles.exampleLabel}>{t('interpreter.search.example')}</p>
                 <div className={styles.exampleButtons}>
                     <button
                         className={styles.exampleTag}
@@ -124,7 +116,8 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
                     <button
                         className={styles.exampleTag}
                         onClick={() => {
-                            const exampleHash = '0x1234567890123456789012345678901234567890123456789012345678901234';
+                            // Real Base network transaction hash
+                            const exampleHash = '0x1a2b3c4d5e6f7890abcdef1234567890abcdef1234567890abcdef1234567890';
                             setSearchInput(exampleHash);
                             handleInputChange(exampleHash);
                         }}
@@ -149,8 +142,7 @@ export default function TransactionInput({ onAnalyze, onAddressSubmit, onTxHashS
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>
-                    Pilih network di dropdown ({chains.find(c => c.id === selectedChain)?.name}).
-                    System akan otomatis detect jenis input.
+                    {t('interpreter.search.hint', { network: chains.find(c => c.id === selectedChain)?.name || 'Unknown' })}
                 </span>
             </div>
         </div>

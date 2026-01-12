@@ -43,10 +43,10 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1667f7c89
 
 // Define metadata for your app
 const metadata = {
-    name: 'MiddleKid Time Machine',
-    description: 'Analyze your trading regrets and protect future trades with options',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com',
-    icons: [typeof window !== 'undefined' ? `${window.location.origin}/icon.png` : 'https://yourdomain.com/icon.png']
+    name: 'MiddleKid',
+    description: 'Multi-chain crypto portfolio tracker and DeFi analyzer',
+    url: 'http://localhost:3000',
+    icons: ['http://localhost:3000/icon.png']
 };
 
 // Configure wagmi with networks
@@ -63,14 +63,16 @@ createAppKit({
     adapters: [wagmiAdapter],
     projectId,
     networks,
-    defaultNetwork: baseSepolia, // Default to Base Sepolia for testing
     metadata,
     features: {
-        analytics: true
+        analytics: true,
+        email: true,
+        socials: ['google', 'x', 'discord', 'github']
     },
     themeMode: 'dark',
     themeVariables: {
-        '--w3m-accent': '#10b981' // Match green theme
+        '--w3m-accent': '#667eea',
+        '--w3m-border-radius-master': '8px'
     }
 });
 

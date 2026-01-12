@@ -42,24 +42,41 @@ export default function RegretReportComponent({ report }: RegretReportProps) {
         setStrategy(recommendedStrategy);
 
         // If strategy exists, fetch pricing from Thetanuts
-        if (recommendedStrategy && report.biggestRegret) {
+        if (recommendedStrategy && (report.biggestRegret || report.bestHold)) {
             setIsLoadingQuote(true);
 
-            const params = getStrategyParameters(report, recommendedStrategy);
+            try {
+                const params = getStrategyParameters(report, recommendedStrategy);
 
-            fetchThetanutsQuote({
-                underlying: params.underlying,
-                strike: params.strike,
-                expiry: params.expiry,
-                type: recommendedStrategy.type.toLowerCase() as 'call' | 'put',
-                size: params.size
-            })
-                .then(setQuote)
-                .catch(err => {
-                    console.error('Failed to fetch quote:', err);
-                    setQuote(null);
+                fetchThetanutsQuote({
+                    underlying: params.underlying,
+                    strike: params.strike,
+                    expiry: params.expiry,
+                    type: recommendedStrategy.type.toLowerCase() as 'call' | 'put',
+                    size: params.size
                 })
-                .finally(() => setIsLoadingQuote(false));
+                    .then(quote => {
+                        console.log('✅ Quote set:', quote);
+                        setQuote(quote);
+                    })
+                    .catch(err => {
+                        console.error('Failed to fetch quote in component:', err);
+                        // Fallback
+                        setQuote({
+                            premium: 0.05,
+                            strike: params.strike,
+                            expiry: params.expiry,
+                            type: recommendedStrategy.type.toLowerCase(),
+                            underlying: params.underlying,
+                            maxLoss: 0.05,
+                            maxUpside: 'Unlimited'
+                        });
+                    })
+                    .finally(() => setIsLoadingQuote(false));
+            } catch (err) {
+                console.error('Error generating params:', err);
+                setIsLoadingQuote(false);
+            }
         }
     }, [report]);
 
@@ -215,30 +232,55 @@ export default function RegretReportComponent({ report }: RegretReportProps) {
                         strategy={strategy}
                         quote={quote}
                         isLoading={isLoadingQuote}
-                        currentPrice={report.biggestRegret?.currentPrice}
-                        tokenSymbol={report.biggestRegret?.token.symbol}
+                        currentPrice={report.biggestRegret?.currentPrice || report.bestHold?.currentPrice}
+                        tokenSymbol={report.biggestRegret?.token.symbol || report.bestHold?.token.symbol}
                     />
                 </div>
             )}
 
-            {/* All Regrets List */}
+            {/* All Regrets List (Grouped) */}
             {report.allRegrets.length > 1 && (
                 <div className={styles.allRegrets}>
                     <h3 className={styles.sectionTitle}>
                         🧻 All Paper Hands Moments ({report.allRegrets.length})
                     </h3>
                     <div className={styles.regretsList}>
-                        {report.allRegrets.slice(1).map((regret, index) => (
-                            <div key={index} className={styles.miniRegretCard}>
-                                <div className={styles.miniHeader}>
-                                    <span className={styles.miniToken}>{regret.token.symbol}</span>
-                                    <span className={styles.miniMissed}>{formatCurrency(regret.missedProfit)}</span>
+                        {Object.values(
+                            report.allRegrets.slice(1).reduce((groups, regret) => {
+                                const symbol = regret.token.symbol;
+                                if (!groups[symbol]) {
+                                    groups[symbol] = {
+                                        token: regret.token,
+                                        totalMissed: 0,
+                                        count: 0,
+                                        avgHold: 0,
+                                        regrets: []
+                                    };
+                                }
+                                groups[symbol].totalMissed += regret.missedProfit;
+                                groups[symbol].avgHold += regret.holdDuration;
+                                groups[symbol].count += 1;
+                                groups[symbol].regrets.push(regret);
+                                return groups;
+                            }, {} as Record<string, { token: any, totalMissed: number, count: number, avgHold: number, regrets: any[] }>)
+                        )
+                            .sort((a, b) => b.totalMissed - a.totalMissed)
+                            .map((group, index) => (
+                                <div key={index} className={styles.miniRegretCard} style={{ cursor: 'default' }}>
+                                    <div className={styles.miniHeader}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span className={styles.miniToken}>{group.token.symbol}</span>
+                                            <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                                {group.count}x Trades
+                                            </span>
+                                        </div>
+                                        <span className={styles.miniMissed}>{formatCurrency(group.totalMissed)}</span>
+                                    </div>
+                                    <div className={styles.miniDetails}>
+                                        Avg Hold {(group.avgHold / group.count).toFixed(1)} days • Total Missed Profit
+                                    </div>
                                 </div>
-                                <div className={styles.miniDetails}>
-                                    Held {regret.holdDuration} days • Regret score: {regret.regretScore}/100
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             )}
@@ -250,31 +292,64 @@ export default function RegretReportComponent({ report }: RegretReportProps) {
                         💎 Diamond Hands Wins ({report.allWins.length})
                     </h3>
                     <div className={styles.winsList}>
-                        {report.allWins.map((win, index) => (
-                            <div key={index} className={styles.winCard}>
-                                <div className={styles.winHeader}>
-                                    <span className={styles.winToken}>{win.token.symbol}</span>
-                                    <span className={styles.winGain}>+{win.unrealizedGainPercent.toFixed(0)}%</span>
-                                </div>
-                                <div className={styles.winDetails}>
-                                    <div className={styles.winRow}>
-                                        <span>Invested:</span>
-                                        <span>{formatCurrency(win.bought.totalSpent)}</span>
+                        {Object.values(
+                            report.allWins.reduce((groups, win) => {
+                                const symbol = win.token.symbol;
+                                if (!groups[symbol]) {
+                                    groups[symbol] = {
+                                        token: win.token,
+                                        totalGain: 0,
+                                        count: 0,
+                                        maxGainPercent: 0,
+                                        currentValue: 0,
+                                        totalSpent: 0
+                                    };
+                                }
+                                groups[symbol].totalGain += win.unrealizedGain;
+                                groups[symbol].count += 1;
+
+                                // Fix Infinity% issue
+                                const spent = win.bought.totalSpent;
+                                const gainPct = spent > 0 ? win.unrealizedGainPercent : 0;
+                                groups[symbol].maxGainPercent = Math.max(groups[symbol].maxGainPercent, gainPct);
+
+                                groups[symbol].currentValue += win.currentValue;
+                                groups[symbol].totalSpent += spent;
+                                return groups;
+                            }, {} as Record<string, { token: any, totalGain: number, count: number, maxGainPercent: number, currentValue: number, totalSpent: number }>)
+                        )
+                            .sort((a, b) => b.totalGain - a.totalGain)
+                            .map((group, index) => (
+                                <div key={index} className={styles.winCard}>
+                                    <div className={styles.winHeader}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span className={styles.winToken}>{group.token.symbol}</span>
+                                            <span style={{ fontSize: '12px', background: 'rgba(78, 237, 180, 0.1)', padding: '2px 6px', borderRadius: '4px', color: '#059669' }}>
+                                                {group.count}x Buys
+                                            </span>
+                                        </div>
+                                        <span className={styles.winGain}>+{group.maxGainPercent.toFixed(0)}% Max</span>
                                     </div>
-                                    <div className={styles.winRow}>
-                                        <span>Current Value:</span>
-                                        <span>{formatCurrency(win.currentValue)}</span>
+                                    <div className={styles.winDetails}>
+
+                                        <div className={styles.winRow}>
+                                            <span>Total Invested:</span>
+                                            <span>{formatCurrency(group.totalSpent)}</span>
+                                        </div>
+                                        <div className={styles.winRow}>
+                                            <span>Current Value:</span>
+                                            <span>{formatCurrency(group.currentValue)}</span>
+                                        </div>
+                                        <div className={styles.winRow}>
+                                            <span>Total Unrealized Gain:</span>
+                                            <span className={styles.gainValue}>+{formatCurrency(group.totalGain)}</span>
+                                        </div>
                                     </div>
-                                    <div className={styles.winRow}>
-                                        <span>Unrealized Gain:</span>
-                                        <span className={styles.gainValue}>+{formatCurrency(win.unrealizedGain)}</span>
+                                    <div className={styles.praiseMessage}>
+                                        💎 Holding {group.count} positions strong!
                                     </div>
                                 </div>
-                                <div className={styles.praiseMessage}>
-                                    {win.praisMessage}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             )}

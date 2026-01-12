@@ -1,34 +1,33 @@
+/* Modern Page Styles */
+
 .container {
   min-height: 100vh;
-  position: relative;
-  z-index: 1;
 }
 
 .content {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: 1.5rem;
 }
 
-.dashboard {
-  margin-top: var(--spacing-2xl);
-}
-
-/* Loading State */
+/* Loading Container */
 .loadingContainer {
   text-align: center;
-  padding: var(--spacing-2xl);
-  animation: fadeIn 0.6s ease-out;
+  padding: 4rem 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .loadingSpinner {
-  width: 64px;
-  height: 64px;
-  border: 4px solid rgba(99, 102, 241, 0.1);
-  border-top-color: var(--color-primary);
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
   border-radius: 50%;
-  margin: 0 auto var(--spacing-lg);
-  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -38,203 +37,361 @@
 }
 
 .loadingText {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
+  font-size: 1rem;
+  color: var(--muted);
   font-weight: 500;
 }
 
-/* Error State */
+/* Error Container */
 .errorContainer {
-  max-width: 500px;
-  margin: var(--spacing-2xl) auto;
-  padding: var(--spacing-xl);
-  background: var(--color-bg-card);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-xl);
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 20px;
   text-align: center;
-  animation: fadeIn 0.6s ease-out;
 }
 
 .errorIcon {
-  width: 64px;
-  height: 64px;
-  color: var(--color-danger);
-  margin: 0 auto var(--spacing-lg);
+  width: 56px;
+  height: 56px;
+  color: #ef4444;
+  margin: 0 auto 1rem;
 }
 
 .errorTitle {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-md);
+  color: var(--fg);
+  margin: 0 0 0.5rem 0;
 }
 
 .errorMessage {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
+  color: var(--muted);
+  margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
 .retryButton {
-  padding: var(--spacing-md) var(--spacing-xl);
-  background: var(--gradient-primary);
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
-  border-radius: var(--radius-lg);
+  border: none;
+  border-radius: 12px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .retryButton:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* Dashboard */
+.dashboard {
+  margin-top: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tab Content */
+.tabContent {
+  margin-top: 1rem;
+}
+
+.tabPane {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.emptyTab {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.emptyTab svg {
+  width: 64px;
+  height: 64px;
+  color: var(--muted);
+  opacity: 0.4;
+  margin-bottom: 1rem;
+}
+
+.emptyTab p {
+  color: var(--muted);
+  font-size: 1rem;
 }
 
 /* Address Card */
 .addressCard {
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-xl);
-  margin-top: var(--spacing-xl);
-  animation: fadeIn 0.6s ease-out 0.4s both;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  margin-top: 1.5rem;
 }
 
 .addressLabel {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.5rem;
 }
 
 .addressValue {
   font-family: var(--font-mono);
-  font-size: 1rem;
-  color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  color: var(--fg);
   word-break: break-all;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 8px;
 }
 
 .explorerLink {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  color: var(--color-primary);
+  gap: 0.5rem;
+  color: #6366f1;
   font-weight: 600;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
+  text-decoration: none;
+  transition: all 0.2s;
 }
 
 .explorerLink svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .explorerLink:hover {
-  color: var(--color-accent);
-  transform: translateX(4px);
+  color: #4f46e5;
+  transform: translateX(3px);
 }
 
 /* Welcome Section */
 .welcome {
-  max-width: 700px;
-  margin: var(--spacing-2xl) auto;
   text-align: center;
-  animation: fadeIn 0.8s ease-out;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.welcomeIcon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto var(--spacing-xl);
-  background: var(--gradient-primary);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
-}
-
-.welcomeIcon svg {
-  width: 48px;
-  height: 48px;
-  color: white;
+.welcomeContent {
+  margin-bottom: 2.5rem;
 }
 
 .welcomeTitle {
   font-size: 2rem;
   font-weight: 800;
-  margin-bottom: var(--spacing-md);
-  background: var(--gradient-primary);
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.welcomeText {
+.welcomeEmoji {
+  font-size: 1.75rem;
+  -webkit-text-fill-color: initial;
+}
+
+.welcomeSubtitle {
   font-size: 1.125rem;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-2xl);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.welcomeText {
+  font-size: 0.9375rem;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto;
   line-height: 1.6;
 }
 
-.features {
+/* Feature Cards Grid */
+.featuresGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-2xl);
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
 }
 
-.feature {
-  padding: var(--spacing-lg);
-  background: var(--color-bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+.featureCard {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: left;
   transition: all 0.3s ease;
 }
 
-.feature:hover {
-  background: var(--color-bg-card-hover);
-  border-color: var(--color-primary);
+.featureCard:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
 }
 
 .featureIcon {
-  font-size: 2rem;
-  margin-bottom: var(--spacing-sm);
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
 }
 
-.featureText {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  font-weight: 500;
+.featureTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 0.375rem;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+.featureDesc {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Supported Protocols */
+.supportedProtocols {
+  text-align: center;
+}
+
+.protocolsLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.875rem;
+  font-weight: 600;
+}
+
+.protocolTags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.protocolTag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.protocolTag:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Analyze Button */
+.analyzeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.analyzeButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.5s ease;
+}
+
+.analyzeButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.45);
+}
+
+.analyzeButton:hover::before {
+  left: 100%;
+}
+
+.analyzeButton:active {
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
   .content {
-    padding: var(--spacing-lg) var(--spacing-md);
+    padding: 1rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
   }
 
   .welcomeTitle {
     font-size: 1.5rem;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 
-  .welcomeText {
+  .welcomeSubtitle {
     font-size: 1rem;
   }
 
-  .features {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
-  }
-}
-
-@media (max-width: 480px) {
-  .addressValue {
-    font-size: 0.75rem;
+  .featureCard {
+    padding: 1.25rem;
   }
 
-  .features {
-    grid-template-columns: 1fr;
+  .analyzeButton {
+    width: 100%;
+    justify-content: center;
   }
 }

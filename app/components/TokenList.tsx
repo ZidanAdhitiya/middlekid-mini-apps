@@ -12,6 +12,28 @@ interface TokenListProps {
 type SortField = 'value' | 'balance' | 'change';
 type SortDirection = 'asc' | 'desc';
 
+// Token Logo Component with error handling
+function TokenLogo({ token }: { token: Token }) {
+    const [imageError, setImageError] = useState(false);
+
+    if (!token.logo || imageError) {
+        return (
+            <div className={styles.logoPlaceholder}>
+                {token.symbol.charAt(0)}
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={token.logo}
+            alt={token.symbol}
+            className={styles.logo}
+            onError={() => setImageError(true)}
+        />
+    );
+}
+
 export default function TokenList({ tokens }: TokenListProps) {
     const [sortField, setSortField] = useState<SortField>('value');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -106,21 +128,7 @@ export default function TokenList({ tokens }: TokenListProps) {
                                 <tr key={`${token.address}-${index}`} className={styles.row}>
                                     <td className={styles.cell}>
                                         <div className={styles.asset}>
-                                            {(() => {
-                                                const hasLogo = Boolean(token.logo);
-                                                const logoUrl = token.logo || '';
-                                                // Debug: log first 3 tokens
-                                                if (index < 3) {
-                                                    console.log(`Token ${token.symbol}: hasLogo=${hasLogo}, logo="${logoUrl}"`);
-                                                }
-                                                return hasLogo ? (
-                                                    <img src={logoUrl} alt={token.symbol} className={styles.logo} />
-                                                ) : (
-                                                    <div className={styles.logoPlaceholder}>
-                                                        {token.symbol.charAt(0)}
-                                                    </div>
-                                                );
-                                            })()}
+                                            <TokenLogo token={token} />
                                             <div className={styles.assetInfo}>
                                                 <div className={styles.symbol}>{token.symbol}</div>
                                                 <div className={styles.name}>{token.name}</div>

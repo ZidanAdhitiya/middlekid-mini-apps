@@ -1,118 +1,63 @@
-/* Premium Chat Widget Container */
+/* AI Floating Button - Clean & Simple */
 .chatContainer {
   position: fixed;
-  bottom: 95px;
   right: 24px;
-  width: 420px;
-  max-width: calc(100vw - 48px);
-  height: 650px;
-  max-height: calc(100vh - 140px);
-  z-index: 9999;
-  animation: chatSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  bottom: 92px;
+  width: 380px;
+  max-height: calc(100vh - 120px);
+  /* Fix: Changed from fixed 600px */
+  height: auto;
+  /* Fix: Allow natural height */
+  min-height: 500px;
+  /* Fix: Minimum usable height */
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  /* Fix: Ensure flex container */
+  flex-direction: column;
+  /* Fix: Stack children vertically */
 }
 
-@keyframes chatSlideUp {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* Premium Floating Button */
+/* AI Floating Button */
 .floatingButton {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 64px;
-  height: 64px;
+  right: 20px;
+  bottom: 20px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow:
-    0 8px 24px rgba(102, 126, 234, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    0 0 0 0 rgba(102, 126, 234, 0.5);
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 10000;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  animation: floatBob 3s ease-in-out infinite;
-}
-
-@keyframes floatBob {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-.floatingButton::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
-  animation: shimmerButton 3s infinite;
-}
-
-@keyframes shimmerButton {
-  0% {
-    transform: translateX(-100%) rotate(45deg);
-  }
-
-  100% {
-    transform: translateX(100%) rotate(45deg);
-  }
-}
-
-.floatingButton::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0);
-  transform: translate(-50%, -50%);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-  }
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 999;
+  transition: transform 0.2s ease;
 }
 
 .floatingButton:hover {
-  transform: scale(1.15) rotate(5deg);
-  box-shadow:
-    0 12px 32px rgba(102, 126, 234, 0.5),
-    0 8px 16px rgba(0, 0, 0, 0.3),
-    0 0 40px rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .floatingButton:active {
@@ -120,91 +65,59 @@
 }
 
 .floatingButton.active {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  animation: none;
-}
-
-.floatingButton.active:hover {
-  box-shadow:
-    0 12px 32px rgba(239, 68, 68, 0.5),
-    0 8px 16px rgba(0, 0, 0, 0.3),
-    0 0 40px rgba(239, 68, 68, 0.4);
+  background: var(--muted);
 }
 
 .floatingButton svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   color: white;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
-}
-
-.floatingButton:hover svg {
-  transform: scale(1.1) rotate(-5deg);
 }
 
 .floatingButton.active svg {
   transform: rotate(45deg);
+  transition: transform 0.2s ease;
 }
 
 /* Notification Badge */
 .badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 14px;
-  height: 14px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  top: 6px;
+  right: 6px;
+  width: 12px;
+  height: 12px;
+  background: var(--danger);
   border-radius: 50%;
-  border: 2.5px solid white;
-  animation: badgePulse 2s ease-in-out infinite;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  border: 2px solid white;
   z-index: 2;
 }
 
-@keyframes badgePulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
-  }
-
-  50% {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.8);
-  }
-}
-
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .chatContainer {
-    bottom: 85px;
-    right: 16px;
-    left: 16px;
+    right: 10px;
+    left: 10px;
     width: auto;
-    height: calc(100vh - 110px);
-    max-height: none;
+    bottom: 80px;
+    max-height: 380px;
   }
 
   .floatingButton {
-    width: 60px;
-    height: 60px;
-    bottom: 20px;
-    right: 20px;
+    width: 52px;
+    height: 52px;
+    bottom: 16px;
+    right: 16px;
   }
 
   .floatingButton svg {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
   }
 
   .badge {
-    width: 12px;
-    height: 12px;
-    top: 6px;
-    right: 6px;
+    width: 10px;
+    height: 10px;
+    top: 5px;
+    right: 5px;
   }
 }

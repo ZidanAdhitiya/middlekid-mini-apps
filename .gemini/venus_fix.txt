@@ -1,0 +1,34 @@
+#!/bin/bash
+# Fix Venus scanner to use getAccountLiquidity
+cat > /tmp/venus_fix.txt << 'EOF'
+// 14. Venus Protocol (BSC)
+async function scanVenus(address: string, chainId: string): Promise<DeFiPosition[]> {
+    const positions: DeFiPosition[] = [];
+    const comptroller = chainId === 'bsc' ? '0xfD36E2c2a6789Db23113685031d7F16329158384' : null;
+    if (!comptroller) return positions;
+    
+    try {
+        const client = getClient(chainId);
+        const accountLiquidity = await client.readContract({
+            address: comptroller as `0x${string}`,
+            abi: [parseAbiItem('function getAccountLiquidity(address) view returns (uint256, uint256, uint256)')],
+            functionName: 'getAccountLiquidity',
+            args: [address as `0x${string}`]
+        }) as [bigint, bigint, bigint];
+        
+        const liquidityUSD = Number(accountLiquidity[1]) / 1e18;
+        
+        if (liquidityUSD > 1) {
+            positions.push({
+                id: `venus-bsc`,
+                protocol: 'Venus Protocol',
+                chain: 'BSC',
+                tokens: [{ symbol: 'Supplied', amount: '1+', value: liquidityUSD }],
+                totalValue: liquidityUSD,
+                apy: 0
+            });
+        }
+    } catch (error) {}
+    return positions;
+}
+EOF

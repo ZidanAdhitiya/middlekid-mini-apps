@@ -79,7 +79,7 @@ export default function TabNavigation({ activeTab, onTabChange, counts }: TabNav
                     >
                         <span className={styles.icon}>{tab.icon}</span>
                         <span className={styles.label}>{tab.label}</span>
-                        {(tab.count !== undefined && tab.count > 0 || tab.id === 'defi') && (
+                        {tab.count !== undefined && (
                             <span className={styles.count}>{tab.count}</span>
                         )}
                     </button>

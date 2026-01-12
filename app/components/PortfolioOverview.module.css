@@ -1,154 +1,133 @@
+/* Modern Portfolio Overview */
+
 .container {
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--spacing-xl);
-    animation: fadeIn 0.6s ease-out;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.header {
-    margin-bottom: var(--spacing-lg);
+.card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
 }
 
-.title {
-    font-size: 1.125rem;
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Total Value Card - Featured */
+.card:first-child {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.label {
+    font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
 }
 
-.mainValue {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-}
-
-.currency {
+.value {
     font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-text-secondary);
-}
-
-.amount {
-    font-size: 3.5rem;
     font-weight: 800;
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.02em;
+    font-family: var(--font-mono);
+}
+
+.card:first-child .value {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .change {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-xl);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-md);
-    width: fit-content;
-}
-
-.positive {
-    color: var(--color-success);
-    background: rgba(16, 185, 129, 0.1);
-}
-
-.negative {
-    color: var(--color-danger);
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.changeIcon {
-    width: 20px;
-    height: 20px;
-}
-
-.changeAmount {
-    color: var(--color-text-muted);
+    gap: 0.25rem;
     font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
 }
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: var(--spacing-lg);
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+.changePositive {
+    color: #059669;
+    background: rgba(16, 185, 129, 0.15);
 }
 
-.stat {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
+.changeNegative {
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Stats Cards */
+.statsGrid {
+    display: contents;
+}
+
+.statCard {
+    composes: card;
 }
 
 .statIcon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
 }
 
-.statIcon svg {
-    width: 24px;
-    height: 24px;
-    color: white;
+.statIcon.tokens {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
 }
 
-.statContent {
-    flex: 1;
+.statIcon.nfts {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(244, 114, 182, 0.15));
 }
 
-.statValue {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    line-height: 1;
-    margin-bottom: var(--spacing-xs);
+.statIcon.defi {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
 }
 
-.statLabel {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+.statIcon.chains {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.15));
 }
 
-@media (max-width: 768px) {
-    .amount {
-        font-size: 2.5rem;
-    }
-
-    .currency {
-        font-size: 1.5rem;
-    }
-
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
+/* Responsive */
+@media (max-width: 600px) {
     .container {
-        padding: var(--spacing-lg);
+        grid-template-columns: 1fr;
     }
 
-    .amount {
+    .card:first-child {
+        grid-column: span 1;
+    }
+
+    .card:first-child .value {
         font-size: 2rem;
     }
 
-    .stats {
-        gap: var(--spacing-md);
-    }
-
-    .statValue {
-        font-size: 1.25rem;
+    .value {
+        font-size: 1.5rem;
     }
 }

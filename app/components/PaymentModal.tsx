@@ -1,17 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAccount, useSwitchChain, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { parseEther } from 'viem';
+import { baseSepolia } from 'viem/chains';
 import type { ThetanutsQuote } from '../lib/options/thetanuts-pricing';
-import {
-    isWalletInstalled,
-    connectWallet,
-    isOnBaseSepolia,
-    switchToBaseSepolia,
-    sendTransaction,
-    waitForTransactionConfirmation,
-    getExplorerUrl,
-    ethToWei
-} from '../lib/wallet-utils';
+import { getExplorerUrl } from '../lib/wallet-utils';
 import styles from './PaymentModal.module.css';
 
 interface PaymentModalProps {
@@ -40,61 +34,63 @@ export function PaymentModal({
     onClose,
     onSuccess
 }: PaymentModalProps) {
+    const { address, isConnected, chain } = useAccount();
+    const { switchChainAsync } = useSwitchChain();
+    const { sendTransactionAsync } = useSendTransaction();
+    const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined);
     const [txState, setTxState] = useState<TxState>(TxState.IDLE);
-    const [txHash, setTxHash] = useState('');
     const [error, setError] = useState('');
-    const [userAddress, setUserAddress] = useState('');
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+        hash: txHash,
+    });
 
     // Mock contract address for testing (replace with real Thetanuts contract)
-    const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_THETANUTS_CONTRACT ||
-        '0x0000000000000000000000000000000000000000';
+    const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_THETANUTS_CONTRACT ||
+        '0x0000000000000000000000000000000000000000') as `0x${string}`;
+
+    // Effect to handle transaction confirmation
+    useEffect(() => {
+        if (isConfirming) {
+            setTxState(TxState.CONFIRMING);
+        } else if (isConfirmed && txHash) {
+            setTxState(TxState.SUCCESS);
+            onSuccess(txHash);
+        }
+    }, [isConfirming, isConfirmed, txHash, onSuccess]);
 
     const handlePurchase = async () => {
         try {
             setError('');
 
-            // Step 1: Check wallet installation
-            if (!isWalletInstalled()) {
+            // Step 1: Check wallet connection
+            if (!isConnected || !address) {
                 setTxState(TxState.NO_WALLET);
-                setError('No wallet detected. Please install MetaMask, Coinbase Wallet, or another Web3 wallet.');
+                setError('Please connect your wallet using the button in the top right corner.');
                 return;
             }
 
-            // Step 2: Connect wallet
-            setTxState(TxState.CONNECTING);
-            const address = await connectWallet();
-            setUserAddress(address);
-
-            // Step 3: Check/switch network
-            const onCorrectNetwork = await isOnBaseSepolia();
-            if (!onCorrectNetwork) {
+            // Step 2: Check/switch network to Base Sepolia
+            if (chain?.id !== baseSepolia.id) {
                 setTxState(TxState.SWITCHING_NETWORK);
-                await switchToBaseSepolia();
+                try {
+                    await switchChainAsync({ chainId: baseSepolia.id });
+                } catch (err: any) {
+                    throw new Error('Failed to switch network. Please switch to Base Sepolia manually.');
+                }
             }
 
-            // Step 4: Send transaction
+            // Step 3: Send transaction
             setTxState(TxState.PENDING);
 
-            // Convert premium to Wei
-            const premiumWei = ethToWei(quote.premium);
-
             // Send simple ETH transfer (mock payment)
-            // In production, this would call contract function with encoded data
-            const hash = await sendTransaction(
-                address,
-                CONTRACT_ADDRESS,
-                premiumWei
-            );
+            const hash = await sendTransactionAsync({
+                to: CONTRACT_ADDRESS,
+                value: parseEther(quote.premium.toString()),
+            });
 
             setTxHash(hash);
-
-            // Step 5: Wait for confirmation
-            setTxState(TxState.CONFIRMING);
-            await waitForTransactionConfirmation(hash);
-
-            // Step 6: Success
-            setTxState(TxState.SUCCESS);
-            onSuccess(hash);
+            // State will update to CONFIRMING via useEffect
 
         } catch (err: any) {
             console.error('❌ Payment error:', err);
@@ -104,6 +100,7 @@ export function PaymentModal({
     };
 
     const handleInstallWallet = () => {
+        // If not connected, we guide them to the main connect button or install
         window.open('https://metamask.io/download/', '_blank');
     };
 
@@ -168,17 +165,18 @@ export function PaymentModal({
                     <div className={styles.statusBox}>
                         <div className={styles.errorIcon}>🦊</div>
                         <div className={styles.statusText}>{error}</div>
-                        <button className={styles.confirmButton} onClick={handleInstallWallet}>
-                            Install Web3 Wallet
+                        <div className={styles.statusSubtext}>Use the Connect Wallet button in the header first.</div>
+                        <button className={styles.confirmButton} onClick={onClose}>
+                            Close
                         </button>
                     </div>
                 )}
 
-                {/* Connecting */}
+                {/* Connecting (Not used in this flow, but kept for type safety) */}
                 {txState === TxState.CONNECTING && (
                     <div className={styles.statusBox}>
                         <div className={styles.loadingIcon}>🔗</div>
-                        <div className={styles.statusText}>Connecting to wallet...</div>
+                        <div className={styles.statusText}>Connecting...</div>
                     </div>
                 )}
 

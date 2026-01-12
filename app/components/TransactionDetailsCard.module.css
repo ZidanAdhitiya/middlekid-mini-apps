@@ -1,0 +1,289 @@
+/* Modern Transaction Details Card - Glassmorphism Design */
+
+.container {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Header */
+.header {
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.txOverview {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.txIcon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.txSuccess {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.txFailed {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.txPending {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.txDetails {
+    flex: 1;
+}
+
+.txType {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.txTitle {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: var(--fg);
+    margin: 0 0 0.5rem 0;
+}
+
+.txHash {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(99, 102, 241, 0.06);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: #6366f1;
+}
+
+.txStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.statusSuccess {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.statusFailed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.statusPending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+}
+
+/* Stats Row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.stat {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.statLabel {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.statValue {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fg);
+}
+
+/* Details Section */
+.section {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Address Display */
+.addressRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+}
+
+.addressRow:last-child {
+    margin-bottom: 0;
+}
+
+.addressLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 60px;
+}
+
+.addressValue {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: #6366f1;
+    word-break: break-all;
+}
+
+/* Value Display */
+.valueDisplay {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    border-radius: 16px;
+}
+
+.valueAmount {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.valueUsd {
+    font-size: 1rem;
+    color: var(--muted);
+}
+
+/* Data Section */
+.dataBox {
+    padding: 1rem;
+    background: rgba(30, 41, 59, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--fg);
+    word-break: break-all;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Warnings */
+.warningBox {
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 12px;
+    color: #dc2626;
+    font-size: 0.875rem;
+}
+
+/* Links */
+.explorerLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.explorerLink:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        padding: 1.5rem;
+    }
+
+    .txOverview {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .statsRow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .section {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .addressRow {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .valueDisplay {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}

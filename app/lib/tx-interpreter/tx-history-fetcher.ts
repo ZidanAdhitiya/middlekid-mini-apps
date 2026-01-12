@@ -4,7 +4,7 @@
 import { alchemyAPI } from '../alchemy';
 import { RegretTransaction } from './regret-types';
 
-const USE_REAL_DATA = process.env.NEXT_PUBLIC_USE_REAL_DATA === 'true';
+const USE_REAL_DATA = true; // process.env.NEXT_PUBLIC_USE_REAL_DATA === 'true';
 
 export interface TokenTransfer {
     hash: string;
@@ -77,6 +77,12 @@ export class TransactionHistoryFetcher {
     ): Promise<TokenTransfer[]> {
         const chainIdStr = chainId.toString();
 
+        // For Base chain, always use BaseScan directly (Alchemy key may not be configured)
+        if (chainId === 8453) {
+            console.log('🔍 Using Blockscout for Base chain...');
+            return await this.fetchFromBlockscout(address, chainId, daysBack);
+        }
+
         try {
             console.log(`🔍 Fetching ERC20 transfers for ${address} on chain ${chainId}`);
 
@@ -84,16 +90,16 @@ export class TransactionHistoryFetcher {
             const outgoing = await alchemyAPI.getAssetTransfers({
                 fromAddress: address,
                 chainId: chainIdStr,
-                category: ['erc20'],
-                maxCount: 100
+                category: ['erc20', 'external'],
+                maxCount: 1000
             });
 
             // Fetch transfers TO wallet (buys)
             const incoming = await alchemyAPI.getAssetTransfers({
                 toAddress: address,
                 chainId: chainIdStr,
-                category: ['erc20'],
-                maxCount: 100
+                category: ['erc20', 'external'],
+                maxCount: 1000
             });
 
             console.log(`✅ Alchemy API success:`, {
@@ -108,8 +114,8 @@ export class TransactionHistoryFetcher {
             ];
 
             if (allTransfers.length === 0) {
-                console.log('⚠️ No transfers from Alchemy, trying BaseScan fallback...');
-                return await this.fetchFromBaseScan(address, chainId, daysBack);
+                console.log('⚠️ No transfers from Alchemy, trying Blockscout fallback...');
+                return await this.fetchFromBlockscout(address, chainId, daysBack);
             }
 
             // Filter by date
@@ -117,6 +123,10 @@ export class TransactionHistoryFetcher {
             cutoffDate.setDate(cutoffDate.getDate() - daysBack);
 
             const filtered = allTransfers.filter((tx: any) => {
+                // Skip transfers with missing metadata
+                if (!tx.metadata || !tx.metadata.blockTimestamp) {
+                    return true; // Include anyway - better than dropping
+                }
                 const txDate = new Date(tx.metadata.blockTimestamp);
                 return txDate >= cutoffDate;
             });
@@ -126,63 +136,78 @@ export class TransactionHistoryFetcher {
 
         } catch (error) {
             console.error('❌ Alchemy API error:', error);
-            console.log('🔄 Trying BaseScan fallback...');
+            console.log('🔄 Trying Blockscout fallback...');
 
             try {
-                return await this.fetchFromBaseScan(address, chainId, daysBack);
+                return await this.fetchFromBlockscout(address, chainId, daysBack);
             } catch (fallbackError) {
-                console.error('❌ BaseScan fallback also failed:', fallbackError);
+                console.error('❌ Blockscout fallback also failed:', fallbackError);
                 return [];
             }
         }
     }
 
     /**
-     * Fallback: Fetch transactions from BaseScan API
+     * Fallback: Fetch transactions from Blockscout API
+     * More reliable without API key than BaseScan
      */
-    private async fetchFromBaseScan(
+    private async fetchFromBlockscout(
         address: string,
         chainId: number,
         daysBack: number
     ): Promise<TokenTransfer[]> {
         // Only works for Base network (chainId 8453)
         if (chainId !== 8453) {
-            console.log('⚠️ BaseScan only supports Base network, skipping fallback');
+            console.log('⚠️ Blockscout only supports Base network, skipping fallback');
             return [];
         }
 
-        const apiKey = process.env.NEXT_PUBLIC_BASESCAN_API_KEY;
-        if (!apiKey) {
-            console.error('❌ NEXT_PUBLIC_BASESCAN_API_KEY not configured');
-            return [];
-        }
+        console.log('🔍 Fetching from Blockscout API...');
 
         try {
-            console.log('🔍 Fetching from BaseScan API...');
+            // Blockscout API (compatible with Etherscan)
+            // https://base.blockscout.com/api?module=account&action=tokentx&address={address}
+            const baseUrl = 'https://base.blockscout.com/api';
 
-            const url = `https://api.basescan.org/api?module=account&action=tokentx&address=${address}&sort=desc&apikey=${apiKey}`;
+            const erc20Url = `${baseUrl}?module=account&action=tokentx&address=${address}&sort=desc`;
+            const normalUrl = `${baseUrl}?module=account&action=txlist&address=${address}&sort=desc`;
 
-            const response = await fetch(url);
-            const data = await response.json();
+            console.log('📡 Calling Blockscout endpoints...');
+            const [erc20Res, normalRes] = await Promise.all([
+                fetch(erc20Url),
+                fetch(normalUrl)
+            ]);
 
-            if (data.status !== '1' || !data.result || !Array.isArray(data.result)) {
-                console.error('❌ BaseScan API error:', data.message || 'Unknown error');
-                return [];
-            }
+            const erc20Data = await erc20Res.json();
+            const normalData = await normalRes.json();
 
-            console.log(`✅ BaseScan API success: ${data.result.length} transfers found`);
+            console.log('📊 Blockscout Response:', {
+                erc20Status: erc20Data.status,
+                erc20Message: erc20Data.message,
+                erc20Count: Array.isArray(erc20Data.result) ? erc20Data.result.length : 0,
+                normalStatus: normalData.status,
+                normalMessage: normalData.message,
+                normalCount: Array.isArray(normalData.result) ? normalData.result.length : 0
+            });
 
-            // Convert BaseScan format to Alchemy format
+            // Check results (Blockscout returns '1' for success, similar to Etherscan)
+            const erc20List = (erc20Data.status === '1' && Array.isArray(erc20Data.result)) ? erc20Data.result : [];
+            const normalList = (normalData.status === '1' && Array.isArray(normalData.result)) ? normalData.result : [];
+
+            console.log(`✅ Blockscout API success: ${erc20List.length} ERC20, ${normalList.length} Native found`);
+
+            // Convert Blockscout format (standard Etherscan format) to TokenTransfer
             const cutoffTimestamp = Math.floor(Date.now() / 1000) - (daysBack * 24 * 60 * 60);
 
-            const transfers: TokenTransfer[] = data.result
+            // Process ERC20 transfers
+            const erc20Transfers: TokenTransfer[] = erc20List
                 .filter((tx: any) => parseInt(tx.timeStamp) >= cutoffTimestamp)
                 .map((tx: any) => ({
                     hash: tx.hash,
                     from: tx.from,
                     to: tx.to,
                     value: tx.value,
-                    asset: tx.tokenSymbol,
+                    asset: tx.tokenSymbol || 'UNKNOWN',
                     rawContract: {
                         address: tx.contractAddress,
                         decimal: tx.tokenDecimal
@@ -193,11 +218,31 @@ export class TransactionHistoryFetcher {
                     category: 'erc20'
                 }));
 
-            console.log(`📊 BaseScan filtered: ${transfers.length} transfers within ${daysBack} days`);
-            return transfers;
+            // Process Native ETH transfers
+            const normalTransfers: TokenTransfer[] = normalList
+                .filter((tx: any) => parseInt(tx.timeStamp) >= cutoffTimestamp && tx.value !== '0' && tx.isError === '0')
+                .map((tx: any) => ({
+                    hash: tx.hash,
+                    from: tx.from,
+                    to: tx.to,
+                    value: tx.value,
+                    asset: 'ETH',
+                    rawContract: {
+                        address: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', // Native ETH placeholder
+                        decimal: '18'
+                    },
+                    metadata: {
+                        blockTimestamp: new Date(parseInt(tx.timeStamp) * 1000).toISOString()
+                    },
+                    category: 'external'
+                }));
+
+            const combined = [...erc20Transfers, ...normalTransfers];
+            console.log(`📊 Blockscout filtered: ${combined.length} transfers within ${daysBack} days`);
+            return combined;
 
         } catch (error) {
-            console.error('❌ BaseScan API fetch error:', error);
+            console.error('❌ Blockscout API fetch error:', error);
             return [];
         }
     }
@@ -216,7 +261,11 @@ export class TransactionHistoryFetcher {
         const byToken = new Map<string, TokenTransfer[]>();
 
         transfers.forEach(tx => {
-            const tokenAddr = tx.rawContract.address.toLowerCase();
+            // Handle Native ETH (external) which has no contract address
+            const tokenAddr = tx.rawContract?.address
+                ? tx.rawContract.address.toLowerCase()
+                : '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'; // Native ETH placeholder
+
             if (!byToken.has(tokenAddr)) {
                 byToken.set(tokenAddr, []);
             }
@@ -232,13 +281,17 @@ export class TransactionHistoryFetcher {
                     const type = isBuy ? 'BUY' : 'SELL';
 
                     // Get token metadata
-                    const decimals = parseInt(tx.rawContract.decimal) || 18;
+                    // Get token metadata
+                    const decimals = tx.rawContract?.decimal ? parseInt(tx.rawContract.decimal) : 18;
                     const amount = parseFloat(tx.value) || 0;
 
-                    // Get timestamp
-                    const timestamp = Math.floor(
-                        new Date(tx.metadata.blockTimestamp).getTime() / 1000
-                    );
+                    // Get timestamp (with null safety)
+                    let timestamp = Math.floor(Date.now() / 1000); // Default to now
+                    if (tx.metadata && tx.metadata.blockTimestamp) {
+                        timestamp = Math.floor(
+                            new Date(tx.metadata.blockTimestamp).getTime() / 1000
+                        );
+                    }
 
                     // We'll fetch price later in regret calculator
                     const priceAtTime = 0; // Placeholder

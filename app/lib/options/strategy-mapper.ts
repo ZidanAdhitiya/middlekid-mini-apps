@@ -29,9 +29,15 @@ export function mapRegretToStrategy(regret: RegretReport): StrategyRecommendatio
     }
 
     // Rule 2: Diamond hands only (no regrets, only wins)
-    // → No strategy needed, they're doing fine
+    // → Recommend Downside Protection (PUT) to protect gains
     if (regret.stats.paperHandsCount === 0 && regret.stats.diamondHandsCount > 0) {
-        return null; // No strategy needed for diamond hands
+        return {
+            name: "Downside Protection Strategy",
+            type: "PUT",
+            reason: "You are a strong holder (Diamond Hands). Protect your gains!",
+            userFriendlyExplanation: "Lindungi nilai portofoliomu dari penurunan pasar dengan membeli Put Option (Thetanuts Basic Put). Ini bekerja seperti asuransi - jika harga jatuh, kamu tetap aman.",
+            emoji: "🛡️"
+        };
     }
 
     // Rule 3: Not enough data
@@ -55,9 +61,9 @@ export function getStrategyParameters(
     expiry: string;
     size: number;
 } {
-    // Use the biggest regret token as the underlying
-    const token = regret.biggestRegret?.token.symbol || 'ETH';
-    const currentPrice = regret.biggestRegret?.currentPrice || 2000;
+    // Use the biggest regret token OR best hold as the underlying
+    const token = regret.biggestRegret?.token.symbol || regret.bestHold?.token.symbol || 'ETH';
+    const currentPrice = regret.biggestRegret?.currentPrice || regret.bestHold?.currentPrice || 2000;
 
     // Strike: at-the-money (current price)
     const strike = Math.round(currentPrice);

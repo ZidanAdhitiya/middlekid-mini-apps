@@ -117,6 +117,13 @@ export async function connectWallet(): Promise<string> {
     }
 
     try {
+        // Optimization: Check if already connected first
+        const existingAccounts = await ethereum.request({ method: 'eth_accounts' });
+        if (existingAccounts && existingAccounts.length > 0) {
+            console.log('✅ Wallet already connected:', existingAccounts[0]);
+            return existingAccounts[0];
+        }
+
         const accounts = await ethereum.request({
             method: 'eth_requestAccounts'
         });
@@ -129,7 +136,7 @@ export async function connectWallet(): Promise<string> {
         return accounts[0];
     } catch (error: any) {
         if (error.code === 4001) {
-            throw new Error('Connection rejected by user');
+            throw new Error('Connection cancelled. Please CHECK YOUR WALLET EXTENSION (it might be locked or have a pending request) and approve.');
         }
         throw error;
     }

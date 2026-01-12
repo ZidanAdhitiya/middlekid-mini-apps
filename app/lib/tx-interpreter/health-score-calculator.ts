@@ -11,13 +11,15 @@ import {
 } from './gamification-types';
 import { WalletAnalysisReport } from './wallet-types';
 
+type TranslationFunction = (key: string, values?: Record<string, string | number>) => string;
+
 export class HealthScoreCalculator {
 
     /**
      * Calculate overall wallet health score from analysis report
      */
-    calculate(report: WalletAnalysisReport): WalletHealthScore {
-        const breakdown = this.calculateBreakdown(report);
+    calculate(report: WalletAnalysisReport, t: (key: string, values?: Record<string, string | number>) => string): WalletHealthScore {
+        const breakdown = this.calculateBreakdown(report, t);
 
         // Sum all earned points
         const totalScore = this.sumPoints(breakdown);
@@ -29,8 +31,8 @@ export class HealthScoreCalculator {
         const rank = this.calculateRank(totalScore);
 
         // Generate strengths & weaknesses
-        const strengths = this.identifyStrengths(breakdown);
-        const weaknesses = this.identifyWeaknesses(breakdown);
+        const strengths = this.identifyStrengths(breakdown, t);
+        const weaknesses = this.identifyWeaknesses(breakdown, t);
 
         return {
             totalScore,
@@ -47,21 +49,22 @@ export class HealthScoreCalculator {
     /**
      * Calculate individual factor scores
      */
-    private calculateBreakdown(report: WalletAnalysisReport): HealthScoreBreakdown {
+    private calculateBreakdown(report: WalletAnalysisReport, t: (key: string, values?: Record<string, string | number>) => string): HealthScoreBreakdown {
         return {
-            noScamTokens: this.scoreNoScamTokens(report),
-            limitedApprovals: this.scoreLimitedApprovals(report),
-            walletAge: this.scoreWalletAge(report),
-            portfolioDiversity: this.scorePortfolioDiversity(report),
-            noPhishingInteractions: this.scoreNoPhishing(report),
-            healthyActivity: this.scoreHealthyActivity(report)
+            noScamTokens: this.scoreNoScamTokens(report, t),
+            limitedApprovals: this.scoreLimitedApprovals(report, t),
+            walletAge: this.scoreWalletAge(report, t),
+            portfolioDiversity: this.scorePortfolioDiversity(report, t),
+            noPhishingInteractions: this.scoreNoPhishing(report, t),
+            healthyActivity: this.scoreHealthyActivity(report, t)
         };
     }
 
     // ==================== Individual Factor Scoring ====================
 
-    private scoreNoScamTokens(report: WalletAnalysisReport): HealthScoreFactor {
+    private scoreNoScamTokens(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 25;
+        // @ts-ignore - scamTokenCount exists at runtime
         const scamCount = report.scamTokenCount;
 
         let earnedPoints = maxPoints;
@@ -85,17 +88,17 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Bebas Token Scam',
-            description: `${scamCount} token scam terdeteksi di wallet`,
+            name: t('analysis.health.factors.noScam.name'),
+            description: t('analysis.health.factors.noScam.description', { count: scamCount }),
             maxPoints,
             earnedPoints,
             status
         };
     }
 
-    private scoreLimitedApprovals(report: WalletAnalysisReport): HealthScoreFactor {
+    private scoreLimitedApprovals(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 20;
-        const approvalCheck = report.checks.find(c => c.name === 'Exposure Approval Tinggi');
+        const approvalCheck = report.checks.find(c => c.name === t('analysis.wallet.checks.approval.name'));
 
         let earnedPoints = maxPoints;
         let status: HealthScoreFactor['status'] = 'excellent';
@@ -112,15 +115,15 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Approval Terkontrol',
-            description: 'Tidak ada unlimited approval berbahaya',
+            name: t('analysis.health.factors.limitedApprovals.name'),
+            description: t('analysis.health.factors.limitedApprovals.description'),
             maxPoints,
             earnedPoints,
             status
         };
     }
 
-    private scoreWalletAge(report: WalletAnalysisReport): HealthScoreFactor {
+    private scoreWalletAge(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 15;
         const ageInDays = report.statistics.ageInDays;
 
@@ -145,17 +148,19 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Umur Wallet',
-            description: `Wallet berumur ${ageInDays} hari`,
+            name: t('analysis.health.factors.walletAge.name'),
+            description: t('analysis.health.factors.walletAge.description', { days: ageInDays }),
             maxPoints,
             earnedPoints,
             status
         };
     }
 
-    private scorePortfolioDiversity(report: WalletAnalysisReport): HealthScoreFactor {
+    private scorePortfolioDiversity(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 15;
+        // @ts-ignore - tokenHoldings exists at runtime
         const tokenCount = report.tokenHoldings.length;
+        // @ts-ignore - tokenHoldings exists at runtime
         const legitTokens = report.tokenHoldings.filter(t => !t.isScam).length;
 
         let earnedPoints = 0;
@@ -179,17 +184,17 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Diversifikasi Portfolio',
-            description: `${legitTokens} token legitimate di wallet`,
+            name: t('analysis.health.factors.diversity.name'),
+            description: t('analysis.health.factors.diversity.description', { count: legitTokens }),
             maxPoints,
             earnedPoints,
             status
         };
     }
 
-    private scoreNoPhishing(report: WalletAnalysisReport): HealthScoreFactor {
+    private scoreNoPhishing(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 15;
-        const phishingCheck = report.checks.find(c => c.name === 'Interaksi dengan Situs Phishing');
+        const phishingCheck = report.checks.find(c => c.name === t('analysis.wallet.checks.phishing.name'));
 
         let earnedPoints = maxPoints;
         let status: HealthScoreFactor['status'] = 'excellent';
@@ -206,15 +211,15 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Tidak Ada Phishing',
-            description: 'Tidak pernah interaksi dengan situs phishing',
+            name: t('analysis.health.factors.noPhishing.name'),
+            description: t('analysis.health.factors.noPhishing.description'),
             maxPoints,
             earnedPoints,
             status
         };
     }
 
-    private scoreHealthyActivity(report: WalletAnalysisReport): HealthScoreFactor {
+    private scoreHealthyActivity(report: WalletAnalysisReport, t: TranslationFunction): HealthScoreFactor {
         const maxPoints = 10;
         const { botDetection, statistics } = report;
 
@@ -244,8 +249,8 @@ export class HealthScoreCalculator {
         }
 
         return {
-            name: 'Aktivitas Sehat',
-            description: 'Pola transaksi normal seperti manusia',
+            name: t('analysis.health.factors.activity.name'),
+            description: t('analysis.health.factors.activity.description'),
             maxPoints,
             earnedPoints,
             status
@@ -277,33 +282,33 @@ export class HealthScoreCalculator {
         return 'Bottom 50%';
     }
 
-    private identifyStrengths(breakdown: HealthScoreBreakdown): string[] {
+    private identifyStrengths(breakdown: HealthScoreBreakdown, t: TranslationFunction): string[] {
         const strengths: string[] = [];
 
         Object.entries(breakdown).forEach(([key, factor]) => {
             if (factor.status === 'excellent') {
-                strengths.push(`✅ ${factor.name} - Perfect!`);
+                strengths.push(t('analysis.health.strengths.perfect', { name: factor.name }));
             }
         });
 
         if (strengths.length === 0) {
-            strengths.push('⚡ Masih banyak ruang untuk improvement');
+            strengths.push(t('analysis.health.strengths.empty'));
         }
 
         return strengths;
     }
 
-    private identifyWeaknesses(breakdown: HealthScoreBreakdown): string[] {
+    private identifyWeaknesses(breakdown: HealthScoreBreakdown, t: TranslationFunction): string[] {
         const weaknesses: string[] = [];
 
         Object.entries(breakdown).forEach(([key, factor]) => {
             if (factor.status === 'critical' || factor.status === 'poor') {
-                weaknesses.push(`⚠️ ${factor.name} - Perlu perbaikan`);
+                weaknesses.push(t('analysis.health.weaknesses.issue', { name: factor.name }));
             }
         });
 
         if (weaknesses.length === 0) {
-            weaknesses.push('🎉 Tidak ada kelemahan signifikan!');
+            weaknesses.push(t('analysis.health.weaknesses.empty'));
         }
 
         return weaknesses;
@@ -311,112 +316,116 @@ export class HealthScoreCalculator {
 
     // ==================== Achievement System ====================
 
-    getAchievements(healthScore: WalletHealthScore, report: WalletAnalysisReport): AchievementProgress {
+    getAchievements(healthScore: WalletHealthScore, report: any, t: TranslationFunction): AchievementProgress {
         const achievements: Achievement[] = [
-            this.checkScamAvoider(report),
-            this.checkApprovalMaster(report),
-            this.checkOGHolder(report),
-            this.checkDiversified(report),
-            this.checkActiveTrader(report)
+            this.checkScamAvoider(report, t),
+            this.checkApprovalMaster(report, t),
+            this.checkOGHolder(report, t),
+            this.checkDiversified(report, t),
+            this.checkActiveTrader(report, t)
         ];
 
-        const totalUnlocked = achievements.filter(a => a.unlocked).length;
+        const earned = achievements.filter(a => a.unlocked);
+        const locked = achievements.filter(a => !a.unlocked);
+        const totalUnlocked = earned.length;
         const totalAvailable = achievements.length;
         const completionPercentage = (totalUnlocked / totalAvailable) * 100;
 
         return {
             achievements,
+            earned,
+            locked,
             totalUnlocked,
             totalAvailable,
             completionPercentage
         };
     }
 
-    private checkScamAvoider(report: WalletAnalysisReport): Achievement {
+    private checkScamAvoider(report: any, t: TranslationFunction): Achievement {
         const unlocked = report.scamTokenCount === 0;
 
         return {
             id: 'scam_avoider',
-            name: 'Penghindaran Scam',
-            description: 'Tidak pernah pegang token scam',
+            name: t('analysis.health.achievements.scamAvoider.name'),
+            description: t('analysis.health.achievements.scamAvoider.description'),
             emoji: '🛡️',
             unlocked,
             unlockedAt: unlocked ? new Date() : undefined,
             progress: unlocked ? 100 : Math.max(0, 100 - (report.scamTokenCount * 20)),
-            requirement: 'Tidak ada token scam di wallet',
+            requirement: t('analysis.health.achievements.scamAvoider.requirement'),
             rarity: 'rare',
             scoreBonus: 5
         };
     }
 
-    private checkApprovalMaster(report: WalletAnalysisReport): Achievement {
-        const approvalCheck = report.checks.find(c => c.name === 'Exposure Approval Tinggi');
+    private checkApprovalMaster(report: any, t: TranslationFunction): Achievement {
+        const approvalCheck = report.checks.find((c: any) => c.name === t('analysis.wallet.checks.approval.name'));
         const unlocked = !approvalCheck || approvalCheck.status === 'pass';
 
         return {
             id: 'approval_master',
-            name: 'Master Approval',
-            description: 'Tidak ada unlimited approval berbahaya',
+            name: t('analysis.health.achievements.approvalMaster.name'),
+            description: t('analysis.health.achievements.approvalMaster.description'),
             emoji: '🔐',
             unlocked,
             unlockedAt: unlocked ? new Date() : undefined,
             progress: unlocked ? 100 : 50,
-            requirement: 'Semua approval terkontrol',
+            requirement: t('analysis.health.achievements.approvalMaster.requirement'),
             rarity: 'epic',
             scoreBonus: 10
         };
     }
 
-    private checkOGHolder(report: WalletAnalysisReport): Achievement {
+    private checkOGHolder(report: any, t: TranslationFunction): Achievement {
         const unlocked = report.statistics.ageInDays >= 1095; // 3 years
         const progress = Math.min(100, (report.statistics.ageInDays / 1095) * 100);
 
         return {
             id: 'og_holder',
-            name: 'OG Holder',
-            description: 'Wallet berumur lebih dari 3 tahun',
+            name: t('analysis.health.achievements.ogHolder.name'),
+            description: t('analysis.health.achievements.ogHolder.description'),
             emoji: '💎',
             unlocked,
             unlockedAt: unlocked ? new Date() : undefined,
             progress,
-            requirement: 'Wallet age > 3 tahun',
+            requirement: t('analysis.health.achievements.ogHolder.requirement'),
             rarity: 'legendary',
             scoreBonus: 15
         };
     }
 
-    private checkDiversified(report: WalletAnalysisReport): Achievement {
-        const legitTokens = report.tokenHoldings.filter(t => !t.isScam).length;
+    private checkDiversified(report: any, t: TranslationFunction): Achievement {
+        const legitTokens = report.tokenHoldings.filter((t: any) => !t.isScam).length;
         const unlocked = legitTokens >= 10;
         const progress = Math.min(100, (legitTokens / 10) * 100);
 
         return {
             id: 'diversified',
-            name: 'Portfolio Diversifikasi',
-            description: 'Memegang 10+ token berbeda',
+            name: t('analysis.health.achievements.diversified.name'),
+            description: t('analysis.health.achievements.diversified.description'),
             emoji: '📊',
             unlocked,
             unlockedAt: unlocked ? new Date() : undefined,
             progress,
-            requirement: '10+ token legitimate',
+            requirement: t('analysis.health.achievements.diversified.requirement'),
             rarity: 'rare',
             scoreBonus: 5
         };
     }
 
-    private checkActiveTrader(report: WalletAnalysisReport): Achievement {
+    private checkActiveTrader(report: any, t: TranslationFunction): Achievement {
         const unlocked = report.statistics.totalTransactions >= 100 && !report.botDetection.isBot;
         const progress = Math.min(100, (report.statistics.totalTransactions / 100) * 100);
 
         return {
             id: 'active_trader',
-            name: 'Trader Aktif',
-            description: '100+ transaksi tanpa bot behavior',
+            name: t('analysis.health.achievements.activeTrader.name'),
+            description: t('analysis.health.achievements.activeTrader.description'),
             emoji: '⚡',
             unlocked,
             unlockedAt: unlocked ? new Date() : undefined,
             progress,
-            requirement: '100+ transaksi (bukan bot)',
+            requirement: t('analysis.health.achievements.activeTrader.requirement'),
             rarity: 'common',
             scoreBonus: 3
         };

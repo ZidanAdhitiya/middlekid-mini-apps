@@ -1,209 +1,178 @@
+/* Modern Token List */
+
 .container {
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--spacing-xl);
-    animation: fadeIn 0.6s ease-out 0.2s both;
-}
-
-.title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-lg);
-    color: var(--color-text-primary);
-}
-
-.tableWrapper {
-    overflow-x: auto;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.headerCell {
-    text-align: left;
-    padding: var(--spacing-md);
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sortable {
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.2s ease;
-}
-
-.sortable:hover {
-    color: var(--color-primary);
-}
-
-.sortIcon {
-    margin-left: var(--spacing-xs);
-    color: var(--color-primary);
-}
-
-.row {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background 0.2s ease;
-}
-
-.row:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.cell {
-    padding: var(--spacing-md);
-}
-
-.asset {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.logoPlaceholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: white;
-    font-size: 1.125rem;
-}
-
-.assetInfo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-}
-
-.symbol {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    font-size: 0.9375rem;
-}
-
-.name {
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-}
-
-.balance {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    font-family: var(--font-mono);
-}
-
-.value {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-xs);
-}
-
-.price {
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-}
-
-.change {
-    font-weight: 600;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    width: fit-content;
-    font-size: 0.875rem;
-}
-
-.positive {
-    color: var(--color-success);
-    background: rgba(16, 185, 129, 0.1);
-}
-
-.negative {
-    color: var(--color-danger);
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.noData {
-    color: var(--color-text-muted);
-}
-
-.portfolioPercent {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-xs);
-    font-size: 0.875rem;
-}
-
-.progressBar {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
     overflow: hidden;
 }
 
-.progressFill {
-    height: 100%;
-    background: var(--gradient-primary);
-    border-radius: 2px;
-    transition: width 0.6s ease;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+/* Token List */
+.list {
+    padding: 0.5rem;
+}
+
+.tokenRow {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.tokenRow:hover {
+    background: rgba(99, 102, 241, 0.06);
+    transform: translateX(4px);
+}
+
+.tokenIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e0e7ff, #f0f9ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.tokenInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.tokenName {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 0.125rem;
+}
+
+.tokenSymbol {
+    font-size: 0.8125rem;
+    color: var(--muted);
+}
+
+.tokenValues {
+    text-align: right;
+}
+
+.tokenValue {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fg);
+    font-family: var(--font-mono);
+}
+
+.tokenBalance {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+}
+
+.tokenChange {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+    display: inline-block;
+}
+
+.positive {
+    color: #059669;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.negative {
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.12);
+}
+
+/* Empty State */
 .empty {
     text-align: center;
-    padding: var(--spacing-2xl);
-    color: var(--color-text-muted);
+    padding: 3rem 1.5rem;
 }
 
 .emptyIcon {
     width: 64px;
     height: 64px;
-    margin: 0 auto var(--spacing-lg);
-    opacity: 0.5;
+    color: var(--muted);
+    opacity: 0.4;
+    margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: var(--spacing-lg);
+.emptyTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 0 0 0.5rem 0;
+}
+
+.emptyText {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* Show More Button */
+.showMore {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    color: #6366f1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.showMore:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .tokenRow {
+        padding: 0.875rem 1rem;
     }
 
-    .table {
-        font-size: 0.875rem;
+    .tokenIcon {
+        width: 40px;
+        height: 40px;
     }
 
-    .headerCell,
-    .cell {
-        padding: var(--spacing-sm);
-    }
-
-    .logo,
-    .logoPlaceholder {
-        width: 32px;
-        height: 32px;
-        font-size: 0.875rem;
-    }
-
-    .symbol {
-        font-size: 0.875rem;
-    }
-
-    .name {
-        font-size: 0.75rem;
+    .tokenValue {
+        font-size: 0.9375rem;
     }
 }

@@ -5,8 +5,10 @@ import { ScamTokenRecord, ScamType } from '../lib/tx-interpreter/gamification-ty
 import { cemeteryAggregator } from '../lib/tx-interpreter/cemetery-aggregator';
 import styles from './page.module.css';
 import Link from 'next/link';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function CemeteryPage() {
+    const { t } = useLanguage();
     const [scams, setScams] = useState<ScamTokenRecord[]>([]);
     const [filteredScams, setFilteredScams] = useState<ScamTokenRecord[]>([]);
     const [filterType, setFilterType] = useState<ScamType | 'all'>('all');
@@ -69,12 +71,12 @@ export default function CemeteryPage() {
         }
     };
 
-    const getScamTypeLabel = (type: ScamType): string => {
+    const getScamTypeLabel = (type: ScamType) => {
         switch (type) {
-            case 'honeypot': return '🍯 HONEYPOT';
-            case 'rug_pull': return '🏃 RUG PULL';
-            case 'fake_token': return '🎭 FAKE TOKEN';
-            case 'high_tax': return '💸 HIGH TAX';
+            case 'honeypot': return t('cemetery.filter.honeypot');
+            case 'rug_pull': return t('cemetery.filter.rugPull');
+            case 'fake_token': return t('cemetery.filter.fakeToken');
+            case 'high_tax': return t('cemetery.filter.highTax');
             case 'blacklisted': return '❌ BLACKLISTED';
             default: return '⚠️ SUSPICIOUS';
         }
@@ -83,13 +85,14 @@ export default function CemeteryPage() {
     return (
         <div className={styles.cemetery}>
             {/* Header */}
+            {/* Header */}
             <div className={styles.cemeteryHeader}>
-                <h1 className={styles.cemeteryTitle}>💀 Scam Token Cemetery</h1>
+                <h1 className={styles.cemeteryTitle}>💀 {t('cemetery.title')}</h1>
                 <p className={styles.cemeterySubtitle}>
-                    Wall of Shame untuk semua token scam yang terdeteksi
+                    {t('cemetery.subtitle')}
                 </p>
                 <Link href="/interpreter" className={styles.backLink}>
-                    ← Kembali ke Analyzer
+                    {t('cemetery.backToAnalyzer')}
                 </Link>
             </div>
 
@@ -98,17 +101,17 @@ export default function CemeteryPage() {
                 <div className={styles.statCard}>
                     <div className={styles.statIcon}>💀</div>
                     <div className={styles.statValue}>{stats.totalScams}</div>
-                    <div className={styles.statLabel}>Scam Tokens Detected</div>
+                    <div className={styles.statLabel}>{t('cemetery.stats.scamsDetected')}</div>
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statIcon}>💰</div>
                     <div className={styles.statValue}>{formatUSD(stats.totalLoss)}</div>
-                    <div className={styles.statLabel}>Estimated Total Loss</div>
+                    <div className={styles.statLabel}>{t('cemetery.stats.totalLoss')}</div>
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statIcon}>👥</div>
                     <div className={styles.statValue}>{stats.totalVictims.toLocaleString()}</div>
-                    <div className={styles.statLabel}>Victims Protected</div>
+                    <div className={styles.statLabel}>{t('cemetery.stats.victims')}</div>
                 </div>
             </div>
 
@@ -116,7 +119,7 @@ export default function CemeteryPage() {
             <div className={styles.controls}>
                 <input
                     type="text"
-                    placeholder="🔍 Search by name, symbol, or address..."
+                    placeholder={t('cemetery.searchPlaceholder')}
                     className={styles.searchInput}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -127,54 +130,55 @@ export default function CemeteryPage() {
                         className={`${styles.filterBtn} ${filterType === 'all' ? styles.active : ''}`}
                         onClick={() => setFilterType('all')}
                     >
-                        All ({scams.length})
+                        {t('cemetery.filter.all', { count: scams.length })}
                     </button>
                     <button
                         className={`${styles.filterBtn} ${filterType === 'honeypot' ? styles.active : ''}`}
                         onClick={() => setFilterType('honeypot')}
                     >
-                        🍯 Honeypot
+                        {t('cemetery.filter.honeypot')}
                     </button>
                     <button
                         className={`${styles.filterBtn} ${filterType === 'rug_pull' ? styles.active : ''}`}
                         onClick={() => setFilterType('rug_pull')}
                     >
-                        🏃 Rug Pull
+                        {t('cemetery.filter.rugPull')}
                     </button>
                     <button
                         className={`${styles.filterBtn} ${filterType === 'fake_token' ? styles.active : ''}`}
                         onClick={() => setFilterType('fake_token')}
                     >
-                        🎭 Fake Token
+                        {t('cemetery.filter.fakeToken')}
                     </button>
                     <button
                         className={`${styles.filterBtn} ${filterType === 'high_tax' ? styles.active : ''}`}
                         onClick={() => setFilterType('high_tax')}
                     >
-                        💸 High Tax
+                        {t('cemetery.filter.highTax')}
                     </button>
                 </div>
             </div>
 
+            {/* 🏆 Tab Navigation */}
             {/* 🏆 Tab Navigation */}
             <div className={styles.tabs}>
                 <button
                     className={`${styles.tab} ${activeTab === 'all' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('all')}
                 >
-                    All Scams
+                    {t('cemetery.tabs.all')}
                 </button>
                 <button
                     className={`${styles.tab} ${activeTab === 'hall-of-fame' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('hall-of-fame')}
                 >
-                    🏆 Hall of Fame
+                    {t('cemetery.tabs.hallOfFame')}
                 </button>
                 <button
                     className={`${styles.tab} ${activeTab === 'trending' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('trending')}
                 >
-                    📈 Trending
+                    {t('cemetery.tabs.trending')}
                 </button>
             </div>
 
@@ -184,8 +188,8 @@ export default function CemeteryPage() {
                 filteredScams.length === 0 ? (
                     <div className={styles.emptyState}>
                         <div className={styles.emptyIcon}>👻</div>
-                        <h3>No Scams Found</h3>
-                        <p>Good news! No scam tokens detected yet.</p>
+                        <h3>{t('cemetery.empty.title')}</h3>
+                        <p>{t('cemetery.empty.description')}</p>
                     </div>
                 ) : (
                     <div className={styles.tombstonesGrid}>
@@ -194,7 +198,7 @@ export default function CemeteryPage() {
                                 {/* Tombstone Header */}
                                 <div className={styles.tombstoneHeader}>
                                     <div className={styles.skull}>💀</div>
-                                    <div className={styles.rip}>R.I.P</div>
+                                    <div className={styles.rip}>{t('cemetery.card.rip')}</div>
                                 </div>
 
                                 {/* Token Info */}
@@ -221,12 +225,12 @@ export default function CemeteryPage() {
                                     <div className={styles.scamStats}>
                                         {scam.estimatedLoss && (
                                             <div className={styles.scamStat}>
-                                                💰 Loss: {formatUSD(scam.estimatedLoss)}
+                                                💰 {t('cemetery.card.loss')} {formatUSD(scam.estimatedLoss)}
                                             </div>
                                         )}
                                         {scam.estimatedVictims && (
                                             <div className={styles.scamStat}>
-                                                👥 {scam.estimatedVictims} victims
+                                                👥 {scam.estimatedVictims} {t('cemetery.card.victims')}
                                             </div>
                                         )}
                                     </div>
@@ -248,12 +252,13 @@ export default function CemeteryPage() {
                             </div>
                         ))}
                     </div>
-                )}
+                )
+            )}
 
             {/* 🏆 Hall of Fame View */}
             {activeTab === 'hall-of-fame' && (
                 <div className={styles.hallOfFame}>
-                    <h2 className={styles.hallTitle}>🏆 Top 10 Biggest Scams</h2>
+                    <h2 className={styles.hallTitle}>{t('cemetery.leaderboard.title')}</h2>
                     {scams.filter(s => s.estimatedLoss && s.estimatedLoss > 0)
                         .sort((a, b) => (b.estimatedLoss || 0) - (a.estimatedLoss || 0))
                         .slice(0, 10)
@@ -275,7 +280,7 @@ export default function CemeteryPage() {
                                 </div>
                                 <div className={styles.leaderboardLoss}>
                                     <div className={styles.lossAmount}>{formatUSD(scam.estimatedLoss || 0)}</div>
-                                    <div className={styles.lossLabel}>Total Loss</div>
+                                    <div className={styles.lossLabel}>{t('cemetery.leaderboard.totalLoss')}</div>
                                 </div>
                             </div>
                         ))}
@@ -285,7 +290,7 @@ export default function CemeteryPage() {
             {/* 📈 Trending View */}
             {activeTab === 'trending' && (
                 <div className={styles.trending}>
-                    <h2 className={styles.trendingTitle}>📈 Most Reported This Week</h2>
+                    <h2 className={styles.trendingTitle}>{t('cemetery.trending.title')}</h2>
                     {scams
                         .sort((a, b) => (b.reportCount || 0) - (a.reportCount || 0))
                         .slice(0, 10)
@@ -293,14 +298,14 @@ export default function CemeteryPage() {
                             <div key={scam.address} className={styles.trendingItem}>
                                 <div className={styles.trendingBadge}>
                                     {index < 3 && '🔥'}
-                                    Hot
+                                    {t('cemetery.trending.hot')}
                                 </div>
                                 <div className={styles.trendingInfo}>
                                     <div className={styles.trendingName}>
                                         {scam.symbol} - {scam.name}
                                     </div>
                                     <div className={styles.trendingStats}>
-                                        {scam.reportCount || 0} reports • {getScamTypeLabel(scam.scamType)}
+                                        {scam.reportCount || 0} {t('cemetery.trending.reports')} • {getScamTypeLabel(scam.scamType)}
                                     </div>
                                 </div>
                             </div>

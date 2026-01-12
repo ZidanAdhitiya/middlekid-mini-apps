@@ -1,6 +1,5 @@
-// Transaction fetcher using Alchemy API
-
-import { alchemyAPI } from '../alchemy';
+// Transaction fetcher using Blockscout API (free, no API key required)
+// Replaced Alchemy which requires paid API key
 
 export interface FetchedTransaction {
     hash: string;
@@ -14,42 +13,55 @@ export interface FetchedTransaction {
 
 export async function fetchRecentTransactions(
     address: string,
-    chainId: number = 1
+    chainId: number = 8453
 ): Promise<FetchedTransaction[]> {
     try {
-        // Map chainId to Alchemy network
-        const networkMap: Record<number, string> = {
-            1: 'eth-mainnet',
-            137: 'polygon-mainnet',
-            10: 'opt-mainnet',
-            42161: 'arb-mainnet',
-            8453: 'base-mainnet',
-        };
+        console.log(`🔍 Fetching transactions for ${address} on chain ${chainId}`);
 
-        const network = networkMap[chainId] || 'eth-mainnet';
+        // Use Blockscout for Base chain (primary supported chain)
+        if (chainId === 8453) {
+            return await fetchFromBlockscout(address);
+        }
 
-        // Fetch transfers using Alchemy
-        const transfers = await alchemyAPI.getAssetTransfers({
-            fromAddress: address,
-            category: ['external', 'erc20', 'erc721', 'erc1155'],
-            maxCount: 10,
-            order: 'desc'
-        });
+        // For other chains, return empty (would need different explorers)
+        console.log(`⚠️ Chain ${chainId} not supported, returning empty array`);
+        return [];
+
+    } catch (error) {
+        console.error('Failed to fetch transactions:', error);
+        return [];
+    }
+}
+
+async function fetchFromBlockscout(address: string): Promise<FetchedTransaction[]> {
+    try {
+        const url = `https://base.blockscout.com/api/v2/addresses/${address}/transactions`;
+        console.log('📡 Calling Blockscout API...');
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.items || !Array.isArray(data.items)) {
+            console.log('⚠️ No transactions found from Blockscout');
+            return [];
+        }
+
+        console.log(`✅ Blockscout returned ${data.items.length} transactions`);
 
         // Transform to our format
-        const transactions: FetchedTransaction[] = transfers.transfers.map((transfer: any) => ({
-            hash: transfer.hash,
-            from: transfer.from,
-            to: transfer.to,
-            data: transfer.rawContract?.value || '0x',
-            value: transfer.value?.toString() || '0',
-            blockNumber: parseInt(transfer.blockNum, 16),
-            timestamp: null // Would need additional API call for timestamp
+        const transactions: FetchedTransaction[] = data.items.slice(0, 10).map((tx: any) => ({
+            hash: tx.hash,
+            from: tx.from?.hash || '',
+            to: tx.to?.hash || null,
+            data: tx.input || '0x',
+            value: tx.value || '0',
+            blockNumber: tx.block ? parseInt(tx.block) : null,
+            timestamp: tx.timestamp ? new Date(tx.timestamp).getTime() / 1000 : null
         }));
 
         return transactions;
     } catch (error) {
-        console.error('Failed to fetch transactions:', error);
+        console.error('Blockscout API error:', error);
         return [];
     }
 }

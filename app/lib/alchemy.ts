@@ -47,36 +47,40 @@ class AlchemyAPI {
     }
 
     private getRpcUrl(chainId: string): string {
-        // Try to find chain by numeric chainId first
-        const numericId = parseInt(chainId);
-        let chain = SUPPORTED_CHAINS.find(c => c.chainId === numericId);
+        // Try to find chain by string ID first
+        let chain = SUPPORTED_CHAINS.find(c => c.id === chainId);
 
-        // Fallback to string ID match
+        // Fallback: try numeric chainId match
         if (!chain) {
-            chain = SUPPORTED_CHAINS.find(c => c.id === chainId);
+            const numericId = parseInt(chainId);
+            if (!isNaN(numericId)) {
+                chain = SUPPORTED_CHAINS.find(c => c.chainId === numericId);
+            }
         }
 
         if (!chain) {
             throw new Error(`Unsupported chain: ${chainId}`);
         }
 
-        // Map chainId to Alchemy network name
-        const networkMap: { [key: string]: string } = {
-            '1': 'eth-mainnet',
-            '137': 'polygon-mainnet',
-            '10': 'opt-mainnet',
-            '42161': 'arb-mainnet',
-            '8453': 'base-mainnet',  // Base support
-            '56': 'bnb-mainnet',
-            '43114': 'avax-mainnet',
-            '250': 'fantom-mainnet',
-            '100': 'gnosis-mainnet',
-            '324': 'zksync-mainnet',
+        // Map numeric chainId to Alchemy network name
+        const networkMap: { [key: number]: string } = {
+            1: 'eth-mainnet',
+            137: 'polygon-mainnet',
+            10: 'opt-mainnet',
+            42161: 'arb-mainnet',
+            8453: 'base-mainnet',
+            56: 'bnb-mainnet',
+            43114: 'avax-mainnet',
+            250: 'fantom-mainnet',
+            100: 'gnosis-mainnet',
+            324: 'zksync-mainnet',
         };
 
-        const network = networkMap[chainId];
-        if (network) {
-            return `https://${network}.g.alchemy.com/v2/${this.apiKey}`;
+        if (chain.chainId !== undefined) {
+            const network = networkMap[chain.chainId];
+            if (network) {
+                return `https://${network}.g.alchemy.com/v2/${this.apiKey}`;
+            }
         }
 
         // Fallback to chain's own RPC if available
@@ -84,7 +88,7 @@ class AlchemyAPI {
             return chain.rpcUrl;
         }
 
-        throw new Error(`No RPC URL available for chain: ${chainId}`);
+        throw new Error(`No RPC URL available for chain: ${chain.name}`);
     }
 
     private async fetch(url: string, options: RequestInit = {}): Promise<any> {

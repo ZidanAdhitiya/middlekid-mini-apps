@@ -324,60 +324,42 @@ export async function GET(request: NextRequest) {
                 }
             }));
 
-            // 2. Fetch DeFi Positions (EVM ONLY)
-            // A. Specific Adapters (Beets, Stargate)
-            const { scanDeFiPositions } = await import('@/app/lib/defi/scanner');
-            const adapterPositions = await scanDeFiPositions(address);
+            // 2. Fetch DeFi Positions - UNIVERSAL Scanner
+            if (isEvm) {
+                try {
+                    console.log('🔍 Scanning DeFi positions...');
 
-            // B. Generic Pattern Scanner (Catch-all for 'All Deals')
-            // Scans token list for known DeFi patterns (LP, Staked, Lending tokens)
-            const defiPatterns = [
-                'LP', 'SLP', 'UNI-V2', 'BPT', 'fBEETS', 'sBeets', 'stS', 'STS', 'MOO', 'Cake-LP', // Liquidity/Farming
-                'aUSDC', 'aETH', 'aWETH', 'cUSDC', 'cETH', 'vwETH', // Lending (Aave/Compound/Venus)
-                'Retail', 'DAO', 'xSUSHI', 'sJOE' // Staking/Gov
-            ];
+                    // Debug: Show tokens with non-zero balances
+                    const tokensWithBalance = allTokens.filter(t => parseFloat(t.balanceFormatted || '0') > 0);
+                    const tokenSample = tokensWithBalance.slice(0, 30).map(t => `${t.symbol}(${parseFloat(t.balanceFormatted).toFixed(2)})`).join(', ');
+                    errors.push(`DEBUG: Scanning ${allTokens.length} tokens, ${tokensWithBalance.length} have balance`);
+                    errors.push(`DEBUG: Tokens with balance: ${tokenSample}`);
 
-            // Also include anything with 'Staked' or 'Vault' in name
-            const genericDeFiTokens = allTokens.filter(t => {
-                const symbol = t.symbol.toUpperCase();
-                const name = t.name.toUpperCase();
-                return defiPatterns.some(p => symbol.includes(p.toUpperCase()) || name.includes(p.toUpperCase()))
-                    || name.includes('STAKED') || name.includes('VAULT');
-            });
+                    const { scanDeFiPositions } = await import('../../lib/defi/free-scanner');
 
-            // Convert generics to positioned objects
-            const genericPositions = genericDeFiTokens.map(t => ({
-                id: `generic-${t.chainId}-${t.address}`,
-                protocolId: 'generic',
-                protocolName: t.symbol.includes('LP') ? 'Liquidity Pool' : 'DeFi Position',
-                chain: SUPPORTED_CHAINS.find(c => c.id === t.chainId)!,
-                type: 'farming' as const, // Default bucket
-                assets: [{
-                    symbol: t.symbol,
-                    address: t.address,
-                    amount: t.balanceFormatted,
-                    valueUsd: t.usdValue || 0
-                }],
-                totalValueUsd: t.usdValue || 0,
-                apy: 0
-            }));
+                    const defiPositions = await scanDeFiPositions(address, allTokens, errors);
+                    console.log(`✅ Found ${defiPositions.length} DeFi positions`);
+                    errors.push(`DEBUG: DeFi scanner returned ${defiPositions.length} positions`);
 
-            // Merge & Deduplicate
-            const adapterIds = new Set(adapterPositions.map(p => p.id));
-            const uniqueGenerics = genericPositions.filter(p => !adapterIds.has(p.id));
+                    stakingPositions = defiPositions.map(pos => ({
+                        id: pos.id,
+                        protocol: pos.protocol,
+                        chain: pos.chain,
+                        tokens: pos.tokens,
+                        totalValue: pos.totalValue,
+                        apy: pos.apy
+                    }));
 
-            const allPositions = [...adapterPositions, ...uniqueGenerics];
-
-            stakingPositions = allPositions.map(pos => ({
-                id: pos.id,
-                protocol: pos.protocolName,
-                chain: pos.chain.name,
-                tokens: pos.assets.map(a => ({ symbol: a.symbol, amount: a.amount, value: a.valueUsd })),
-                totalValue: pos.totalValueUsd,
-                apy: pos.apy
-            }));
-
-            totalDefiValue = stakingPositions.reduce((sum, p) => sum + p.totalValue, 0);
+                    totalDefiValue = stakingPositions.reduce((sum, p) => sum + p.totalValue, 0);
+                    console.log(`💰 Total DeFi value: $${totalDefiValue.toFixed(2)}`);
+                    errors.push(`DEBUG: Total DeFi value = $${totalDefiValue.toFixed(2)}`);
+                } catch (error) {
+                    console.error('❌ DeFi scan error:', error);
+                    errors.push(`DeFi scan error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                    stakingPositions = [];
+                    totalDefiValue = 0;
+                }
+            }
         }
 
         // Calculate Totals

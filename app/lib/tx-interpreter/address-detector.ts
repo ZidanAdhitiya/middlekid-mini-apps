@@ -64,79 +64,44 @@ export async function detectInputType(input: string): Promise<InputDetectionResu
 
 /**
  * Checks if an address is a smart contract or regular wallet
- * Uses contract code detection with multiple fallbacks
+ * Uses server-side API to bypass CORS restrictions
  */
-async function checkIfContract(address: string): Promise<InputDetectionResult> {
-    // Method 1: Try Blockscout API
+async function checkIfContract(address: string, chainId: number = 8453): Promise<InputDetectionResult> {
     try {
-        const response = await fetch(`https://base.blockscout.com/api/v2/addresses/${address}`);
+        // Call server-side API for contract detection
+        const response = await fetch('/api/check-contract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ address, chainId })
+        });
 
         if (response.ok) {
             const data = await response.json();
 
-            // If it has contract code, it's a contract
-            if (data.is_contract) {
+            console.log(`[Detection] Contract check result: ${data.type}, isContract: ${data.isContract}`);
+
+            if (data.isContract) {
                 return {
                     type: 'TOKEN_CONTRACT',
                     confidence: 95,
-                    reason: 'Verified as smart contract via Blockscout API'
+                    reason: 'Verified as contract (has bytecode) via server-side RPC'
                 };
             } else {
                 return {
                     type: 'WALLET',
                     confidence: 95,
-                    reason: 'Verified as Externally Owned Account (EOA) via Blockscout API'
+                    reason: 'Verified as wallet (no contract code) via server-side RPC'
                 };
             }
         }
     } catch (error) {
-        console.log('Blockscout API unavailable, trying RPC fallback');
+        console.error('Contract check API failed:', error);
     }
 
-    // Method 2: Try RPC eth_getCode check
-    try {
-        const rpcUrl = process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org';
-        const rpcResponse = await fetch(rpcUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_getCode',
-                params: [address, 'latest'],
-                id: 1
-            })
-        });
-
-        if (rpcResponse.ok) {
-            const rpcData = await rpcResponse.json();
-            const code = rpcData.result;
-
-            // "0x" means no code = EOA/Wallet
-            // Anything else means contract
-            if (code === '0x' || code === '0x0') {
-                return {
-                    type: 'WALLET',
-                    confidence: 90,
-                    reason: 'Verified as wallet (no contract code) via RPC'
-                };
-            } else {
-                return {
-                    type: 'TOKEN_CONTRACT',
-                    confidence: 90,
-                    reason: 'Verified as contract (has bytecode) via RPC'
-                };
-            }
-        }
-    } catch (error) {
-        console.log('RPC check failed, using default assumption');
-    }
-
-    // Fallback: Default to WALLET
-    // Most user inputs are wallet addresses, not contracts
-    // Better UX to assume wallet than wrongly label as contract
+    // Fallback: Default to WALLET with low confidence
     return {
         type: 'WALLET',
-        confidence: 60,
+        confidence: 50,
         reason: 'Unable to verify on-chain, defaulting to wallet address'
     };
 }

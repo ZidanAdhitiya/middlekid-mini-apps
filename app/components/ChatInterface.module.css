@@ -167,6 +167,10 @@
     flex-direction: column;
     gap: 16px;
     background: linear-gradient(to bottom, rgba(17, 24, 39, 0.5), rgba(17, 24, 39, 0.3));
+    min-height: 0;
+    /* Fix: Prevents flex item from overflowing */
+    max-height: calc(100vh - 400px);
+    /* Fix: Ensures input stays visible */
 }
 
 .messages::-webkit-scrollbar {
@@ -318,10 +322,14 @@
 
 /* Modern Quick Action Buttons */
 .quickActions {
-    padding: 0 20px 16px;
+    padding: 0 20px 12px;
+    /* Reduced from 16px */
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    /* Reduced from 10px */
+    flex-shrink: 0;
+    /* Fix: Prevents shrinking */
 }
 
 .quickActionButton {
@@ -371,12 +379,15 @@
 
 /* Enhanced Input Container */
 .inputContainer {
-    padding: 20px;
+    padding: 16px 20px;
+    /* Reduced from 20px */
     background: linear-gradient(to top, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.9));
     border-top: 1px solid rgba(139, 92, 246, 0.2);
     display: flex;
     gap: 12px;
     backdrop-filter: blur(10px);
+    flex-shrink: 0;
+    /* Fix: Prevents this from being hidden */
 }
 
 .input {

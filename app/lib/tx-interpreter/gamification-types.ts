@@ -124,7 +124,9 @@ export interface Achievement {
 }
 
 export interface AchievementProgress {
-    achievements: Achievement[];
+    achievements: Achievement[]; // All achievements
+    earned: Achievement[]; // Unlocked achievements only
+    locked: Achievement[]; // Locked achievements only
     totalUnlocked: number;
     totalAvailable: number;
     completionPercentage: number;

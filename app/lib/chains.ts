@@ -66,14 +66,6 @@ export const SUPPORTED_CHAINS: ChainConfig[] = [
         logo: 'https://cryptologos.cc/logos/avalanche-avax-logo.png'
     },
     {
-        id: 'fantom',
-        chainId: 250,
-        name: 'Fantom',
-        alchemyNetwork: 'fantom-mainnet',
-        nativeSymbol: 'FTM',
-        logo: 'https://cryptologos.cc/logos/fantom-ftm-logo.png'
-    },
-    {
         id: 'gnosis',
         chainId: 100,
         name: 'Gnosis',
@@ -81,35 +73,19 @@ export const SUPPORTED_CHAINS: ChainConfig[] = [
         nativeSymbol: 'xDAI',
         logo: 'https://cryptologos.cc/logos/gnosis-gno-logo.png'
     },
-    {
-        id: 'viction',
-        name: 'Viction',
-        alchemyNetwork: 'viction-mainnet',
-        nativeSymbol: 'VIC',
-        logo: 'https://pbs.twimg.com/profile_images/1719626573752528896/yX8-k_u8_400x400.jpg'
-    },
-    {
-        id: 'monad',
-        name: 'Monad',
-        alchemyNetwork: 'monad-mainnet',
-        nativeSymbol: 'MON',
-        logo: 'https://pbs.twimg.com/profile_images/1628126300186718210/N-tP8a9s_400x400.jpg'
-    },
-    {
-        id: 'sonic',
-        name: 'Sonic',
-        alchemyNetwork: 'sonic-mainnet',
-        rpcUrl: 'https://rpc.soniclabs.com',
-        nativeSymbol: 'S',
-        logo: 'https://pbs.twimg.com/profile_images/1819036772718198784/N2Yv7vX__400x400.jpg'
-    },
-    // Top L2s/L1s
-    { id: 'linea', chainId: 59144, name: 'Linea', alchemyNetwork: 'linea-mainnet', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/linea-logo.png' },
+    // Top L2s/L1s - Reliable public RPCs
+    { id: 'linea', chainId: 59144, name: 'Linea', rpcUrl: 'https://rpc.linea.build', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/linea-logo.png' },
     { id: 'zksync', chainId: 324, name: 'zkSync Era', alchemyNetwork: 'zksync-mainnet', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/zksync-logo.png' },
-    { id: 'scroll', chainId: 534352, name: 'Scroll', alchemyNetwork: 'scroll-mainnet', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/scroll-logo.png' },
-    { id: 'blast', chainId: 81457, name: 'Blast', alchemyNetwork: 'blast-mainnet', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/blast-logo.png' },
-    { id: 'mantle', chainId: 5000, name: 'Mantle', alchemyNetwork: 'mantle-mainnet', nativeSymbol: 'MNT', logo: 'https://cryptologos.cc/logos/mantle-mnt-logo.png' },
-    { id: 'cronos', chainId: 25, name: 'Cronos', alchemyNetwork: 'cronos-mainnet', nativeSymbol: 'CRO', logo: 'https://cryptologos.cc/logos/cronos-cro-logo.png' },
-    { id: 'zora', chainId: 7777777, name: 'Zora', alchemyNetwork: 'zora-mainnet', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/zora-logo.png' }
+    { id: 'scroll', chainId: 534352, name: 'Scroll', rpcUrl: 'https://rpc.scroll.io', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/scroll-logo.png' },
+    { id: 'blast', chainId: 81457, name: 'Blast', rpcUrl: 'https://rpc.blast.io', nativeSymbol: 'ETH', logo: 'https://cryptologos.cc/logos/blast-logo.png' },
+    { id: 'cronos', chainId: 25, name: 'Cronos', rpcUrl: 'https://evm.cronos.org', nativeSymbol: 'CRO', logo: 'https://cryptologos.cc/logos/cronos-cro-logo.png' },
+    { id: 'monad', chainId: 41454, name: 'Monad', rpcUrl: 'https://rpc.monad.xyz', nativeSymbol: 'MON', logo: 'https://pbs.twimg.com/profile_images/1628126300186718210/N-tP8a9s_400x400.jpg' }
+
+    // Removed unreliable chains:
+    // - Mantle: RPC method not whitelisted
+    // - Viction: Content-Type header issues  
+    // - Fantom: Network timeouts
+    // - Zora: RPC method restrictions
+    // - Sonic: Network unreliable
 ];
 

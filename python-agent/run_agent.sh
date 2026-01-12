@@ -23,7 +23,13 @@ echo "📚 Installing Python packages..."
 pip install -q flask==3.0.0 flask-cors==4.0.0 openai
 
 # Export environment variables
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY_HERE"
+# Set your OpenAI API key as environment variable before running:
+# export OPENAI_API_KEY="your-api-key-here"
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "❌ Error: OPENAI_API_KEY environment variable is not set"
+    echo "Please set it first: export OPENAI_API_KEY='your-api-key'"
+    exit 1
+fi
 export PORT=8080
 export ALLOWED_ORIGINS="http://localhost:3000"
 

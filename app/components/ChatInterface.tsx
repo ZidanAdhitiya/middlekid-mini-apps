@@ -13,7 +13,7 @@ export default function ChatInterface({ onClose }: ChatInterfaceProps) {
         {
             id: '1',
             role: 'assistant',
-            content: 'Halo! Saya Kid, asisten AI untuk Middlekid. Ada yang bisa saya bantu? 👋',
+            content: 'Hello! I can help you understand your wallet analysis and answer questions about MiddleKid.',
             timestamp: new Date(),
             status: 'sent',
         },
@@ -37,9 +37,9 @@ export default function ChatInterface({ onClose }: ChatInterfaceProps) {
     }, []);
 
     const quickActions = [
-        { label: 'Bagaimana cara pakai app ini?', emoji: '❓' },
-        { label: 'Analisis token contract', emoji: '🔍' },
-        { label: 'Jelaskan DeFi positions', emoji: '📊' },
+        'How does this work?',
+        'Analyze token contract',
+        'Explain DeFi positions',
     ];
 
     const handleSend = async () => {
@@ -87,7 +87,7 @@ export default function ChatInterface({ onClose }: ChatInterfaceProps) {
             const errorMessage: ChatMessage = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: 'Maaf, terjadi kesalahan. Silakan coba lagi. 😔',
+                content: 'Sorry, something went wrong. Please try again.',
                 timestamp: new Date(),
                 status: 'error',
             };
@@ -120,8 +120,8 @@ export default function ChatInterface({ onClose }: ChatInterfaceProps) {
                         </svg>
                     </div>
                     <div className={styles.headerText}>
-                        <h3>Kid - AI Assistant</h3>
-                        <p>Middlekid Support</p>
+                        <h3>AI Assistant</h3>
+                        <p>MiddleKid Support</p>
                     </div>
                 </div>
                 <button className={styles.closeButton} onClick={onClose} aria-label="Close chat">
@@ -167,10 +167,9 @@ export default function ChatInterface({ onClose }: ChatInterfaceProps) {
                         <button
                             key={index}
                             className={styles.quickActionButton}
-                            onClick={() => handleQuickAction(action.label)}
+                            onClick={() => handleQuickAction(action)}
                         >
-                            <span className={styles.emoji}>{action.emoji}</span>
-                            {action.label}
+                            {action}
                         </button>
                     ))}
                 </div>

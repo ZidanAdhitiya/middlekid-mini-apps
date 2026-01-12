@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (!ALCHEMY_API_KEY) {
-            console.error('ALCHEMY_API_KEY not configured');
+            console.error('❌ ALCHEMY_API_KEY not configured');
             return NextResponse.json(
                 { error: 'API key not configured' },
                 { status: 500 }
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
         const network = networkMap[chainId.toString()];
         if (!network) {
+            console.error(`❌ Unsupported chain: ${chainId}`);
             return NextResponse.json(
                 { error: `Unsupported chain: ${chainId}` },
                 { status: 400 }
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
         }
 
         const url = `https://${network}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+        console.log(`🔍 Fetching transaction ${txHash} from ${network}...`);
 
         // Fetch transaction and receipt
         const [txResponse, receiptResponse] = await Promise.all([
@@ -67,12 +69,29 @@ export async function POST(request: NextRequest) {
         const txData = await txResponse.json();
         const receiptData = await receiptResponse.json();
 
+        console.log('📡 Alchemy TX Response:', JSON.stringify(txData, null, 2));
+        console.log('📡 Alchemy Receipt Response:', JSON.stringify(receiptData, null, 2));
+
+        // Check if transaction exists
+        if (!txData.result) {
+            console.error(`❌ Transaction not found: ${txHash} on ${network}`);
+            return NextResponse.json(
+                {
+                    error: `Transaction tidak ditemukan di ${network.replace('-mainnet', '')} network. Pastikan hash benar dan network sesuai.`,
+                    transaction: null,
+                    receipt: null
+                },
+                { status: 404 }
+            );
+        }
+
+        console.log(`✅ Transaction found successfully`);
         return NextResponse.json({
             transaction: txData.result,
             receipt: receiptData.result
         });
     } catch (error: any) {
-        console.error('Transaction API error:', error);
+        console.error('❌ Transaction API error:', error);
         return NextResponse.json(
             { error: error.message || 'Failed to fetch transaction' },
             { status: 500 }

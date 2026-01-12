@@ -26,8 +26,13 @@ class RegretCalculator {
         const toTimestamp = Math.floor(Date.now() / 1000);
 
         // Step 1: Fetch transaction history
-        const transactions = await this.fetchTransactionHistory(address, chainId, fromTimestamp, toTimestamp);
-        console.log(`📊 Found ${transactions.length} transactions`);
+        // Step 1: Fetch transaction history from multiple chains (Base + Ethereum + L2s)
+        const chains = [8453, 1, 10, 42161, 137];
+        const txPromises = chains.map(cid => this.fetchTransactionHistory(address, cid, fromTimestamp, toTimestamp));
+        const results = await Promise.all(txPromises);
+        const transactions = results.flat().sort((a, b) => a.timestamp - b.timestamp);
+
+        console.log(`📊 Found ${transactions.length} transactions across chains ${chains.join(', ')}`);
 
         // Step 2: Match buy/sell pairs
         const { regrets, wins } = await this.matchBuySellPairs(transactions);
@@ -86,7 +91,7 @@ class RegretCalculator {
         fromTimestamp: number,
         toTimestamp: number
     ): Promise<RegretTransaction[]> {
-        const USE_REAL_DATA = process.env.NEXT_PUBLIC_USE_REAL_DATA === 'true';
+        const USE_REAL_DATA = true; // process.env.NEXT_PUBLIC_USE_REAL_DATA === 'true';
 
         if (USE_REAL_DATA) {
             console.log('🔍 Fetching REAL transaction history from blockchain...');
@@ -231,11 +236,36 @@ class RegretCalculator {
             const buys = txs.filter(t => t.type === 'BUY');
             const sells = txs.filter(t => t.type === 'SELL');
 
-            // Get current price
-            const currentPrice = await priceFetcher.getCurrentPrice(tokenAddr);
+            // Get current price (use fallback if CoinGecko fails)
+            let currentPrice = await priceFetcher.getCurrentPrice(tokenAddr);
 
             if (!currentPrice) {
-                console.warn(`No price data for ${txs[0].token.symbol}`);
+                console.warn(`No price data for ${txs[0].token.symbol}, using historical prices if available`);
+                // Use the most recent transaction's price as a fallback
+                const sortedTxs = [...txs].sort((a, b) => b.timestamp - a.timestamp);
+                currentPrice = sortedTxs[0]?.priceAtTime || 0;
+            }
+
+            // If still no price, use hardcoded defaults for major assets
+            if (currentPrice === 0) {
+                const symbol = txs[0].token.symbol.toUpperCase();
+                const defaultPrices: Record<string, number> = {
+                    'ETH': 3500,
+                    'WETH': 3500,
+                    'USDC': 1,
+                    'USDT': 1,
+                    'DAI': 1,
+                    'DEGEN': 0.01,
+                };
+                if (defaultPrices[symbol]) {
+                    currentPrice = defaultPrices[symbol];
+                    console.log(`Using default price for ${symbol}: $${currentPrice}`);
+                }
+            }
+
+            // Skip only if we truly have no price data and it's not a major token
+            if (currentPrice === 0 && txs.every(tx => tx.priceAtTime === 0)) {
+                console.warn(`Skipping ${txs[0].token.symbol} - no price data available at all`);
                 continue;
             }
 

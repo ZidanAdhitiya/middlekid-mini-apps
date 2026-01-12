@@ -1,13 +1,12 @@
 import { WalletAnalysisReport } from '../lib/tx-interpreter/wallet-types';
 import styles from './WalletReport.module.css';
-import HealthScore from './HealthScore';
-import AchievementBadges from './AchievementBadges';
 
 interface WalletReportProps {
     report: WalletAnalysisReport;
+    isPersonalWallet?: boolean; // Flag to indicate if this is user's connected wallet
 }
 
-export default function WalletReport({ report }: WalletReportProps) {
+export default function WalletReport({ report, isPersonalWallet = false }: WalletReportProps) {
     if (!report) return null;
 
     const getRiskColor = (risk: string) => {
@@ -44,15 +43,7 @@ export default function WalletReport({ report }: WalletReportProps) {
                 </div>
             </div>
 
-            {/* 🎮 Health Score Section */}
-            {report.healthScore && (
-                <HealthScore score={report.healthScore} />
-            )}
 
-            {/* 🏆 Achievement Badges Section */}
-            {report.achievements && (
-                <AchievementBadges achievements={report.achievements} />
-            )}
 
             {/* Risk Score Bar */}
             <div className={styles.riskScore}>
@@ -154,56 +145,7 @@ export default function WalletReport({ report }: WalletReportProps) {
                 </div>
             </div>
 
-            {/* Token Holdings */}
-            {report.tokenHoldings.length > 0 && (
-                <div className={styles.tokensSection}>
-                    <h3>
-                        Token yang Dimiliki ({report.tokenHoldings.length})
-                        {report.scamTokenCount > 0 && (
-                            <span className={styles.scamBadge}>
-                                ⚠️ {report.scamTokenCount} Scam
-                            </span>
-                        )}
-                    </h3>
-                    <div className={styles.tokensList}>
-                        {report.tokenHoldings.map((token, index) => (
-                            <div
-                                key={index}
-                                className={`${styles.token} ${token.isScam ? styles.scamToken : ''}`}
-                            >
-                                <div className={styles.tokenHeader}>
-                                    <div className={styles.tokenInfo}>
-                                        <span className={styles.tokenSymbol}>
-                                            {token.isScam && '⚠️ '}
-                                            {token.symbol}
-                                        </span>
-                                        <span className={styles.tokenName}>{token.name}</span>
-                                    </div>
-                                    <div className={styles.tokenBalance}>
-                                        {token.balanceFormatted}
-                                    </div>
-                                </div>
 
-                                {token.isScam && (
-                                    <div className={styles.tokenWarnings}>
-                                        {token.warnings.map((warning, i) => (
-                                            <span key={i} className={styles.tokenWarning}>
-                                                {warning}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {token.isScam && (
-                                    <div className={styles.scamAlert}>
-                                        🚨 TOKEN SCAM - JANGAN DIJUAL!
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
 
             {/* Recommendations */}
             <div className={styles.recommendations}>

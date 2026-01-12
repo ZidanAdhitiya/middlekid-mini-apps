@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
+import { Suspense } from "react";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { minikitConfig } from "../minikit.config";
 import { RootProvider } from "./rootProvider";
 import { WalletProvider } from "./components/WalletProvider";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import AppHeader from "./components/AppHeader";
+import ChatWidget from "./components/ChatWidget";
+import NavigationProgress from "./components/NavigationProgress";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -45,9 +50,18 @@ export default function RootLayout({
     <RootProvider>
       <html lang="en">
         <body className={`${inter.variable} ${sourceCodePro.variable}`}>
-          <WalletProvider>
-            <SafeArea>{children}</SafeArea>
-          </WalletProvider>
+          <LanguageProvider>
+            <WalletProvider>
+              <SafeArea>
+                <Suspense fallback={null}>
+                  <NavigationProgress />
+                </Suspense>
+                <AppHeader />
+                {children}
+                <ChatWidget />
+              </SafeArea>
+            </WalletProvider>
+          </LanguageProvider>
         </body>
       </html>
     </RootProvider>
